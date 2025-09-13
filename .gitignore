@@ -1,0 +1,17 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Blender cache directories
+blendcache*/
+*.blend1
+*.blend2
+
+# Transient files
+.DS_Store
+*.log
+*.tmp
+*.swp
+*~
+Thumbs.db
