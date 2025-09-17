@@ -22,13 +22,17 @@ SCBW-Gen (StarCraft: Brood War Generator) is a collection of tools for building 
      hython --version
      ```
    - (Optional) Set `HOUDINI_PATH` or project-specific environment variables if your studio pipeline requires them. See `houdini/README.md` (to be added) for detailed environment notes.
-3. **Install helper Python dependencies (optional)**
-   If you plan to use the standalone utilities, create a virtual environment and install the requirements:
+3. **Install helper Python dependencies**
+   The Houdini automation scripts rely on [`pyyaml`](https://pyyaml.org/) to read `.yaml` pack descriptions. Create a virtual environment and install the bundled requirements before running the utilities:
    ```bash
    python3 -m venv .venv
    source .venv/bin/activate  # Linux/macOS
    .venv\Scripts\activate    # Windows
    pip install -r requirements.txt
+   ```
+   After installation you can confirm that YAML loading is available:
+   ```bash
+   python -c "import yaml; print('pyyaml ready')"
    ```
 
 ## Houdini Automation Workflow
