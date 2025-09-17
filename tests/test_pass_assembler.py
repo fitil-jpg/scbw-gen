@@ -1,9 +1,11 @@
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from houdini.config import PackConfig, ShotParameters
+from houdini.config import ConfigError, PackConfig, ShotParameters
 from houdini.passes import PassAssembler
 
 
@@ -24,3 +26,14 @@ def test_process_shots_dry_run_without_exr_driver(tmp_path):
 
     assert manifest.pass_paths
     assert manifest.packed_exr is None
+
+
+def test_pack_config_shots_missing_id_raises(tmp_path):
+    config = PackConfig(path=tmp_path / "pack.yaml", data={"shots": [{}]})
+
+    with pytest.raises(ConfigError) as exc_info:
+        _ = config.shots
+
+    message = str(exc_info.value)
+    assert "index 0" in message
+    assert str(config.path) in message

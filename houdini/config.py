@@ -38,7 +38,33 @@ class PackConfig:
 
     @property
     def shots(self) -> List[ShotParameters]:
-        return [ShotParameters(id=entry["id"], raw=entry) for entry in self.data.get("shots", [])]
+        shots_data = self.data.get("shots", [])
+        if not isinstance(shots_data, Iterable):
+            raise ConfigError(
+                f"'shots' in {self.path} must be iterable, got: {type(shots_data)!r}."
+            )
+        resolved: List[ShotParameters] = []
+
+        for index, entry in enumerate(shots_data):
+            if not isinstance(entry, Mapping):
+                raise ConfigError(
+                    f"Shot entry at index {index} in {self.path} must be a mapping, got: {type(entry)!r}."
+                )
+
+            if "id" not in entry:
+                raise ConfigError(
+                    f"Shot entry at index {index} in {self.path} is missing required 'id'."
+                )
+
+            shot_id = entry["id"]
+            if not isinstance(shot_id, str):
+                raise ConfigError(
+                    f"Shot entry at index {index} in {self.path} must have a string 'id', got: {type(shot_id)!r}."
+                )
+
+            resolved.append(ShotParameters(id=shot_id, raw=entry))
+
+        return resolved
 
     def find_shot(self, shot_id: str) -> ShotParameters:
         for shot in self.shots:
