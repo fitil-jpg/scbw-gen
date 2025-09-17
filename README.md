@@ -51,6 +51,7 @@ The Houdini pipeline converts input StarCraft assets into multi-layer EXRs using
    Run the build script headlessly via `hython`:
    ```bash
    hython houdini/generate_passes.py \
+     --hip-file <path/to/your_scene.hip> \
      --config params/pack.yaml \
      --shot shot_1001 \
      --output renders/houdini \
@@ -58,6 +59,7 @@ The Houdini pipeline converts input StarCraft assets into multi-layer EXRs using
      --render-root /out/scbw_passes \
      --exr-driver /out/scbw_exr_packager
    ```
+   Ensure the supplied HIP defines the `/obj/scbw_shot_controller1` control node, or point `--control-node` to your own controller when deviating from the default scene layout.
    The CLI loads the Houdini scene, applies the selected shot parameters, renders the RGBA/mask/Z passes, and finally assembles them into a multi-plane EXR in the requested output folder.
 4. **Dry run outside Houdini**
    For CI or quick verification, you may run the script without `hython` by enabling `--dry-run`. The script will validate configuration files and print the paths it would generate without requiring the `hou` module.
