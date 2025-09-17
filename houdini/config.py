@@ -63,11 +63,17 @@ def load_pack_config(path: Path) -> PackConfig:
         )
 
     if path.suffix.lower() == ".json":
-        data = json.loads(path.read_text())
+        try:
+            data = json.loads(path.read_text())
+        except json.JSONDecodeError as exc:
+            raise ConfigError(f"Failed to parse JSON configuration at '{path}': {exc}") from exc
     else:
         if yaml is None:
             raise ConfigError("pyyaml is required to load YAML configuration files.")
-        data = yaml.safe_load(path.read_text())  # type: ignore[arg-type]
+        try:
+            data = yaml.safe_load(path.read_text())  # type: ignore[arg-type]
+        except yaml.YAMLError as exc:  # type: ignore[attr-defined]
+            raise ConfigError(f"Failed to parse YAML configuration at '{path}': {exc}") from exc
 
     if not isinstance(data, MutableMapping):
         raise ConfigError(f"Configuration root must be a mapping, got: {type(data)!r}")
