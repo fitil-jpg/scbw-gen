@@ -77,7 +77,7 @@ class PassAssembler:
         control_node_path: Optional[str] = None,
         render_root: str = "/out/scbw_passes",
         exr_driver: Optional[str] = "/out/scbw_exr_packager",
-        frame_range: FrameRange = FrameRange(),
+        frame_range: Optional[FrameRange] = None,
     ) -> None:
         self.config = config
         self.output_directory = output_directory
@@ -85,7 +85,7 @@ class PassAssembler:
         self.control_node_path = control_node_path
         self.render_root = render_root
         self.exr_driver = exr_driver
-        self.frame_range = frame_range
+        self.frame_range = frame_range or FrameRange()
 
     # ------------------------------------------------------------------
     # High level workflow
