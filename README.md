@@ -33,21 +33,32 @@ SCBW-Gen (StarCraft: Brood War Generator) is a collection of tools for building 
 
 ## Houdini Automation Workflow
 
-The Houdini pipeline converts input StarCraft assets into multi-layer EXRs using HDA-driven automation. The entry point script is `houdini/scripts/build_multilayer_exr.py` (added alongside the Houdini digital assets).
+The Houdini pipeline converts input StarCraft assets into multi-layer EXRs using HDA-driven automation. The primary entry point is the hython-friendly CLI `houdini/generate_passes.py`.
 
 1. **Prepare input assets**
    - Place the source `.scx`/`.chk` maps, sprites, and palette data in the `assets/` directory (create it if necessary).
-   - Update `params/pack.yaml` with references to the assets you want to process.
-2. **Launch the automation**
+   - Update `params/pack.yaml` (or `.json`) with references to the assets you want to process.
+2. **Inspect available shots**
+   ```bash
+   hython houdini/generate_passes.py --list-shots
+   ```
+   The command parses the pack file and prints the shot identifiers that can be rendered.
+3. **Launch the automation**
    Run the build script headlessly via `hython`:
    ```bash
-   hython houdini/scripts/build_multilayer_exr.py \
+   hython houdini/generate_passes.py \
      --config params/pack.yaml \
-     --output renders/multilayer
+     --shot shot_1001 \
+     --output renders/houdini \
+     --control-node /obj/scbw_shot_controller1 \
+     --render-root /out/scbw_passes \
+     --exr-driver /out/scbw_exr_packager
    ```
-   The script loads the Houdini scene, imports the requested game assets, and writes layered EXR plates for each animation state to the specified output folder.
-3. **Review outputs**
-   - Each EXR contains separate layers for diffuse, emission, selection masks, and any auxiliary passes authored in the HDA network.
+   The CLI loads the Houdini scene, applies the selected shot parameters, renders the RGBA/mask/Z passes, and finally assembles them into a multi-plane EXR in the requested output folder.
+4. **Dry run outside Houdini**
+   For CI or quick verification, you may run the script without `hython` by enabling `--dry-run`. The script will validate configuration files and print the paths it would generate without requiring the `hou` module.
+5. **Review outputs**
+   - Each EXR contains separate layers for the standard RGBA, selection mask, and depth/utility passes configured in your Houdini network.
    - Use your preferred compositing package to inspect the renders or feed them into downstream batch tools.
 
 ### Optional Blender Fallback
@@ -56,7 +67,7 @@ If Houdini access is unavailable, you may still adapt the legacy Blender scripts
 
 ## Legacy Components
 
-An earlier Wolfram Language prototype remains in the repository for archival and reference purposes only. It is no longer maintained, and day-to-day production should rely on the Houdini pipeline described above.
+The historical Wolfram Language prototype (`wolfram/generate.wl`) remains in the repository for archival and reference purposes only. It is no longer invoked by the project documentation, and day-to-day production should rely on the Houdini pipeline described above.
 
 ## Contributing
 
