@@ -1,3 +1,4 @@
+import logging
 import sys
 from pathlib import Path
 
@@ -7,7 +8,8 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from houdini import config as config_module
 from houdini.config import ConfigError, load_pack_config
-from houdini.generate_passes import _parse_arguments
+from houdini.generate_passes import _parse_arguments, main
+from houdini.passes import HoudiniNotAvailableError
 
 
 def test_parse_arguments_prefers_yaml(monkeypatch, tmp_path):
@@ -55,3 +57,25 @@ def test_load_pack_config_invalid_yaml(tmp_path):
         load_pack_config(config_path)
 
     assert str(config_path) in str(excinfo.value)
+
+
+def test_main_handles_houdini_not_available(monkeypatch, caplog, tmp_path):
+    config_path = tmp_path / "pack.yaml"
+    config_path.write_text("shots: []")
+
+    fake_config = object()
+
+    monkeypatch.setattr("houdini.generate_passes.load_pack_config", lambda _: fake_config)
+
+    def _raise_houdini_error(*args, **kwargs):
+        raise HoudiniNotAvailableError("Houdini is not accessible")
+
+    monkeypatch.setattr("houdini.generate_passes._render", _raise_houdini_error)
+
+    caplog.set_level(logging.INFO)
+
+    exit_code = main(["--config", str(config_path)])
+
+    assert exit_code == 4
+    assert any("Houdini is not accessible" in record.getMessage() for record in caplog.records)
+    assert "Traceback" not in caplog.text

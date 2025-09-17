@@ -12,7 +12,7 @@ if __package__ in {None, ""}:  # pragma: no cover - executed when run as a scrip
     sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 from houdini.config import ConfigError, PackConfig, filter_shots, list_shot_ids, load_pack_config
-from houdini.passes import FrameRange, HoudiniSession, PassAssembler
+from houdini.passes import FrameRange, HoudiniNotAvailableError, HoudiniSession, PassAssembler
 
 try:  # pragma: no cover - hython-only dependency
     import hou  # type: ignore
@@ -166,6 +166,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             hip_file=args.hip_file,
             dry_run=args.dry_run,
         )
+    except HoudiniNotAvailableError as exc:
+        LOG.error("%s", exc)
+        return 4
     except ConfigError as exc:
         LOG.error("%s", exc)
         return 3
