@@ -150,6 +150,11 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         LOG.error("%s", exc)
         return 2
 
+    resolved_path = getattr(config, "path", args.config)
+    if resolved_path != args.config:
+        LOG.info("Configuration resolved to %s", resolved_path)
+        args.config_fallback_used = True
+
     if args.list_shots:
         return _list_and_exit(config)
 

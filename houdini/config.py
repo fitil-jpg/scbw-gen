@@ -3,14 +3,18 @@
 from __future__ import annotations
 
 import json
+import logging
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Mapping, MutableMapping, Optional
+from typing import Any, Iterable, List, Mapping, MutableMapping, Optional
 
 try:
     import yaml  # type: ignore
 except Exception:  # pragma: no cover - yaml is optional during tests
     yaml = None  # type: ignore
+
+
+LOG = logging.getLogger(__name__)
 
 
 class ConfigError(RuntimeError):
@@ -88,14 +92,27 @@ def load_pack_config(path: Path) -> PackConfig:
             "Expected one of: " + ", ".join(sorted(_SUPPORTED_EXTENSIONS))
         )
 
-    if path.suffix.lower() == ".json":
+    suffix = path.suffix.lower()
+
+    if suffix == ".json":
         try:
             data = json.loads(path.read_text())
         except json.JSONDecodeError as exc:
             raise ConfigError(f"Failed to parse JSON configuration at '{path}': {exc}") from exc
     else:
         if yaml is None:
-            raise ConfigError("pyyaml is required to load YAML configuration files.")
+            fallback_path = path.with_suffix(".json")
+            if fallback_path.exists():
+                LOG.info(
+                    "PyYAML is not available; falling back to JSON configuration at %s",
+                    fallback_path,
+                )
+                return load_pack_config(fallback_path)
+
+            raise ConfigError(
+                "pyyaml is required to load YAML configuration files. "
+                f"Install pyyaml or provide a JSON configuration at '{fallback_path}'."
+            )
         try:
             data = yaml.safe_load(path.read_text())  # type: ignore[arg-type]
         except yaml.YAMLError as exc:  # type: ignore[attr-defined]

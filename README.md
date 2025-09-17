@@ -34,6 +34,7 @@ SCBW-Gen (StarCraft: Brood War Generator) is a collection of tools for building 
    ```bash
    python -c "import yaml; print('pyyaml ready')"
    ```
+   If `pyyaml` is unavailable, the tools automatically look for a JSON twin of the configuration (for example `params/pack.json`) so you can still run the helpers by pointing `--config` to that file or allowing the fallback to kick in.
 
 ## Houdini Automation Workflow
 

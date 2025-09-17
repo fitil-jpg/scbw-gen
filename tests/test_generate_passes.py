@@ -48,6 +48,22 @@ def test_load_pack_config_invalid_json(tmp_path):
     assert str(config_path) in str(excinfo.value)
 
 
+def test_load_pack_config_falls_back_when_yaml_unavailable(monkeypatch, tmp_path, caplog):
+    yaml_config = tmp_path / "pack.yaml"
+    yaml_config.write_text("shots: []")
+    json_config = tmp_path / "pack.json"
+    json_config.write_text("{\"shots\": []}")
+
+    monkeypatch.setattr(config_module, "yaml", None)
+    caplog.set_level(logging.INFO, logger="houdini.config")
+
+    config = load_pack_config(yaml_config)
+
+    assert config.path == json_config
+    assert config.data == {"shots": []}
+    assert any("falling back" in record.getMessage() for record in caplog.records)
+
+
 @pytest.mark.skipif(config_module.yaml is None, reason="PyYAML not available")
 def test_load_pack_config_invalid_yaml(tmp_path):
     config_path = tmp_path / "pack.yaml"
