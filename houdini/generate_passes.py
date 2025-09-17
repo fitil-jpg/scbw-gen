@@ -12,7 +12,15 @@ if __package__ in {None, ""}:  # pragma: no cover - executed when run as a scrip
     sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 from houdini.config import ConfigError, PackConfig, filter_shots, list_shot_ids, load_pack_config
-from houdini.passes import FrameRange, HoudiniNotAvailableError, HoudiniSession, PassAssembler
+from houdini.passes import (
+    DEFAULT_CONTROL_NODE,
+    DEFAULT_EXR_DRIVER,
+    DEFAULT_RENDER_ROOT,
+    FrameRange,
+    HoudiniNotAvailableError,
+    HoudiniSession,
+    PassAssembler,
+)
 
 try:  # pragma: no cover - hython-only dependency
     import hou  # type: ignore
@@ -38,9 +46,21 @@ def _parse_arguments(argv: Optional[Sequence[str]] = None) -> argparse.Namespace
     parser.add_argument("--list-shots", action="store_true", help="List shots defined in the configuration and exit")
     parser.add_argument("--output", type=Path, default=Path("renders/houdini"), help="Output directory for rendered passes")
     parser.add_argument("--hip-file", type=Path, help="Optional HIP file to load before rendering")
-    parser.add_argument("--control-node", help="Houdini node path that accepts shot parameters")
-    parser.add_argument("--render-root", default="/out/scbw_passes", help="Parent node containing per-plane ROPs")
-    parser.add_argument("--exr-driver", default="/out/scbw_exr_packager", help="ROP that packs the multi-plane EXR")
+    parser.add_argument(
+        "--control-node",
+        default=DEFAULT_CONTROL_NODE,
+        help=f"Houdini node path that accepts shot parameters (default: {DEFAULT_CONTROL_NODE})",
+    )
+    parser.add_argument(
+        "--render-root",
+        default=DEFAULT_RENDER_ROOT,
+        help=f"Parent node containing per-plane ROPs (default: {DEFAULT_RENDER_ROOT})",
+    )
+    parser.add_argument(
+        "--exr-driver",
+        default=DEFAULT_EXR_DRIVER,
+        help=f"ROP that packs the multi-plane EXR (default: {DEFAULT_EXR_DRIVER})",
+    )
     parser.add_argument(
         "--passes",
         nargs="+",

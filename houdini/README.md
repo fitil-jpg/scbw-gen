@@ -18,14 +18,10 @@ hython houdini/generate_passes.py \
   --hip-file <path/to/your_scene.hip> \
   --config params/pack.yaml \
   --shot shot_1001 \
-  --output renders/houdini \
-  --control-node /obj/scbw_shot_controller1 \
-  --render-root /out/scbw_passes \
-  --exr-driver /out/scbw_exr_packager
+  --output renders/houdini
 ```
-
-The example assumes your HIP contains the default control node, render root, and EXR driver; supply your scene via `--hip-file`
-and adjust the node paths if your network uses different locations.
+The CLI defaults to `/obj/scbw_shot_controller1`, `/out/scbw_passes`, and `/out/scbw_exr_packager` for the control node, render
+root, and EXR driver; supply your scene via `--hip-file` and adjust the node paths if your network uses different locations.
 
 Use `--list-shots` to inspect available shot identifiers or `--dry-run` when
 running outside Houdini. The latter is useful for CI environments where `hou`
