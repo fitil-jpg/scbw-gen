@@ -37,3 +37,17 @@ def test_pack_config_shots_missing_id_raises(tmp_path):
     message = str(exc_info.value)
     assert "index 0" in message
     assert str(config.path) in message
+
+
+def test_default_frame_range_isolation(tmp_path):
+    config = PackConfig(path=tmp_path / "pack.yaml", data={"shots": []})
+
+    assembler_one = PassAssembler(config=config, output_directory=tmp_path)
+    assembler_two = PassAssembler(config=config, output_directory=tmp_path)
+
+    assembler_one.frame_range.start = 10
+    assembler_one.frame_range.end = 20
+
+    assert assembler_one.frame_range.as_tuple() == (10, 20)
+    assert assembler_two.frame_range.as_tuple() == (1, 1)
+    assert assembler_one.frame_range is not assembler_two.frame_range
