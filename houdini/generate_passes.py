@@ -22,10 +22,18 @@ except Exception:  # pragma: no cover
 
 LOG = logging.getLogger(__name__)
 
+DEFAULT_CONFIG_PATH = Path("params/pack.yaml")
+FALLBACK_CONFIG_PATH = DEFAULT_CONFIG_PATH.with_suffix(".json")
+
 
 def _parse_arguments(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--config", type=Path, default=Path("params/pack.yaml"), help="Pack description (YAML/JSON)")
+    parser.add_argument(
+        "--config",
+        type=Path,
+        default=DEFAULT_CONFIG_PATH,
+        help="Pack description (YAML/JSON, defaults to params/pack.yaml with params/pack.json as fallback)",
+    )
     parser.add_argument("--shot", dest="shots", action="append", help="Only render the specified shot ID(s)")
     parser.add_argument("--list-shots", action="store_true", help="List shots defined in the configuration and exit")
     parser.add_argument("--output", type=Path, default=Path("renders/houdini"), help="Output directory for rendered passes")
@@ -48,7 +56,20 @@ def _parse_arguments(argv: Optional[Sequence[str]] = None) -> argparse.Namespace
     )
     parser.add_argument("--dry-run", action="store_true", help="Skip Houdini calls and just report actions")
     parser.add_argument("--verbose", action="store_true", help="Enable debug logging")
-    return parser.parse_args(argv)
+
+    args = parser.parse_args(argv)
+
+    raw_args = sys.argv[1:] if argv is None else list(argv)
+    config_option_provided = any(arg == "--config" or arg.startswith("--config=") for arg in raw_args)
+
+    args.config_was_default = not config_option_provided and args.config == DEFAULT_CONFIG_PATH
+    args.config_fallback_used = False
+
+    if args.config_was_default and not args.config.exists() and FALLBACK_CONFIG_PATH.exists():
+        args.config = FALLBACK_CONFIG_PATH
+        args.config_fallback_used = True
+
+    return args
 
 
 def _configure_logging(verbose: bool) -> None:
@@ -113,6 +134,15 @@ def _render(
 def main(argv: Optional[Sequence[str]] = None) -> int:
     args = _parse_arguments(argv)
     _configure_logging(args.verbose)
+
+    if getattr(args, "config_fallback_used", False):
+        LOG.info(
+            "Default configuration %s was not found; falling back to %s",
+            DEFAULT_CONFIG_PATH,
+            args.config,
+        )
+
+    LOG.info("Loading configuration from %s", args.config)
 
     try:
         config = load_pack_config(args.config)
