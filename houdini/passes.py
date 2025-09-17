@@ -98,7 +98,7 @@ class PassAssembler:
             if dry_run or hou is None:
                 LOG.info("Dry-run mode active; skipping Houdini execution for shot %s", shot.id)
                 manifest.pass_paths = self._simulate_pass_paths(shot)
-                manifest.packed_exr = self.output_directory / f"{shot.id}.exr"
+                manifest.packed_exr = self._simulate_packed_exr_path(shot)
                 manifests.append(manifest)
                 continue
 
@@ -216,6 +216,11 @@ class PassAssembler:
         for plane in self.passes:
             simulated[plane] = self.output_directory / "passes" / shot.id / f"{shot.id}_{plane}.exr"
         return simulated
+
+    def _simulate_packed_exr_path(self, shot: ShotParameters) -> Optional[Path]:
+        if not self.exr_driver:
+            return None
+        return self.output_directory / f"{shot.id}.exr"
 
 
 __all__ = [
