@@ -1,0 +1,2 @@
+# Dependencies for Houdini automation helpers
+pyyaml>=6.0
