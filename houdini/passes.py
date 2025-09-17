@@ -19,6 +19,11 @@ except Exception:  # pragma: no cover - hython-only dependency.
 LOG = logging.getLogger(__name__)
 
 
+DEFAULT_CONTROL_NODE = "/obj/scbw_shot_controller1"
+DEFAULT_RENDER_ROOT = "/out/scbw_passes"
+DEFAULT_EXR_DRIVER = "/out/scbw_exr_packager"
+
+
 class HoudiniNotAvailableError(RuntimeError):
     """Raised when the :mod:`hou` module cannot be imported."""
 
@@ -74,9 +79,9 @@ class PassAssembler:
         config: PackConfig,
         output_directory: Path,
         passes: Optional[Sequence[str]] = None,
-        control_node_path: Optional[str] = None,
-        render_root: str = "/out/scbw_passes",
-        exr_driver: Optional[str] = "/out/scbw_exr_packager",
+        control_node_path: Optional[str] = DEFAULT_CONTROL_NODE,
+        render_root: str = DEFAULT_RENDER_ROOT,
+        exr_driver: Optional[str] = DEFAULT_EXR_DRIVER,
         frame_range: Optional[FrameRange] = None,
     ) -> None:
         self.config = config
