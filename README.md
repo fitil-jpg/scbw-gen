@@ -21,6 +21,12 @@ SCBW-Gen (StarCraft: Brood War Generator) is a collection of tools for building 
      ```bash
      hython --version
      ```
+   - Confirm that the machine sees a valid Houdini license. If `hython` can render without throwing a "no license" dialog, the client is already pulling a license (including the free Apprentice tier). For extra certainty, run one of the license-status commands:
+     ```bash
+     sesictrl status
+     hserver -S
+     ```
+     Both utilities print the host that supplies the license so you can validate that your environment is pointed at the expected SideFX server or local installation.
    - (Optional) Set `HOUDINI_PATH` or project-specific environment variables if your studio pipeline requires them. See `houdini/README.md` (to be added) for detailed environment notes.
 3. **Install helper Python dependencies**
    The Houdini automation scripts rely on [`pyyaml`](https://pyyaml.org/) to read `.yaml` pack descriptions. Create a virtual environment and install the bundled requirements before running the utilities:
