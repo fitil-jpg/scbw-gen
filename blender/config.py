@@ -98,6 +98,11 @@ def load_pack_config(config_path: Path) -> PackConfig:
     return PackConfig(data, config_path)
 
 
+def list_shot_ids(config: PackConfig) -> List[str]:
+    """Return all shot identifiers defined in the pack file."""
+    return [shot.id for shot in config.shots]
+
+
 def filter_shots(config: PackConfig, shot_ids: Optional[List[str]]) -> List[ShotConfig]:
     """Filter shots by ID list."""
     if not shot_ids:
