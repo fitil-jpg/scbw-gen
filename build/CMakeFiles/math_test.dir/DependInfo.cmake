@@ -8,10 +8,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/workspace/src/main.c" "CMakeFiles/demo_viewer.dir/src/main.c.o" "gcc" "CMakeFiles/demo_viewer.dir/src/main.c.o.d"
-  "/workspace/src/viewer.c" "CMakeFiles/demo_viewer.dir/src/viewer.c.o" "gcc" "CMakeFiles/demo_viewer.dir/src/viewer.c.o.d"
-  "/workspace/src/viewer_utils.c" "CMakeFiles/demo_viewer.dir/src/viewer_utils.c.o" "gcc" "CMakeFiles/demo_viewer.dir/src/viewer_utils.c.o.d"
-  "" "demo_viewer" "gcc" "CMakeFiles/demo_viewer.dir/link.d"
+  "/workspace/src/math_test.cpp" "CMakeFiles/math_test.dir/src/math_test.cpp.o" "gcc" "CMakeFiles/math_test.dir/src/math_test.cpp.o.d"
+  "" "math_test" "gcc" "CMakeFiles/math_test.dir/link.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

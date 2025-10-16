@@ -1,17 +1,19 @@
-demo_viewer: \
+math_test: \
   /lib/x86_64-linux-gnu/Scrt1.o \
   /lib/x86_64-linux-gnu/crti.o \
   /usr/lib/gcc/x86_64-linux-gnu/14/crtbeginS.o \
-  CMakeFiles/demo_viewer.dir/src/main.c.o \
-  CMakeFiles/demo_viewer.dir/src/viewer.c.o \
-  CMakeFiles/demo_viewer.dir/src/viewer_utils.c.o \
-  _deps/glad-build/libglad.a \
-  /usr/lib/x86_64-linux-gnu/libglfw.so.3.4 \
-  /usr/lib/gcc/x86_64-linux-gnu/14/libgcc.a \
+  CMakeFiles/math_test.dir/src/math_test.cpp.o \
+  /usr/lib/gcc/x86_64-linux-gnu/14/libstdc++.so \
+  /lib/x86_64-linux-gnu/libm.so \
+  /lib/x86_64-linux-gnu/libm.so \
+  /lib/x86_64-linux-gnu/libm.so \
+  /lib/x86_64-linux-gnu/libm.so.6 \
+  /lib/x86_64-linux-gnu/libmvec.so.1 \
   /usr/lib/gcc/x86_64-linux-gnu/14/libgcc_s.so \
   /usr/lib/gcc/x86_64-linux-gnu/14/libgcc_s.so \
   /usr/lib/gcc/x86_64-linux-gnu/14/libgcc_s.so \
   /lib/x86_64-linux-gnu/libgcc_s.so.1 \
+  /usr/lib/gcc/x86_64-linux-gnu/14/libgcc.a \
   /usr/lib/gcc/x86_64-linux-gnu/14/libgcc.a \
   /lib/x86_64-linux-gnu/libc.so \
   /lib/x86_64-linux-gnu/libc.so \
@@ -19,15 +21,14 @@ demo_viewer: \
   /lib/x86_64-linux-gnu/libc.so.6 \
   /usr/lib/x86_64-linux-gnu/libc_nonshared.a \
   /lib64/ld-linux-x86-64.so.2 \
-  /usr/lib/gcc/x86_64-linux-gnu/14/libgcc.a \
   /usr/lib/gcc/x86_64-linux-gnu/14/libgcc_s.so \
   /usr/lib/gcc/x86_64-linux-gnu/14/libgcc_s.so \
   /usr/lib/gcc/x86_64-linux-gnu/14/libgcc_s.so \
   /lib/x86_64-linux-gnu/libgcc_s.so.1 \
   /usr/lib/gcc/x86_64-linux-gnu/14/libgcc.a \
+  /usr/lib/gcc/x86_64-linux-gnu/14/libgcc.a \
   /usr/lib/gcc/x86_64-linux-gnu/14/crtendS.o \
   /lib/x86_64-linux-gnu/crtn.o \
-  /lib/x86_64-linux-gnu/libm.so.6 \
   /lib64/ld-linux-x86-64.so.2
 
 /lib/x86_64-linux-gnu/Scrt1.o:
@@ -36,17 +37,19 @@ demo_viewer: \
 
 /usr/lib/gcc/x86_64-linux-gnu/14/crtbeginS.o:
 
-CMakeFiles/demo_viewer.dir/src/main.c.o:
+CMakeFiles/math_test.dir/src/math_test.cpp.o:
 
-CMakeFiles/demo_viewer.dir/src/viewer.c.o:
+/usr/lib/gcc/x86_64-linux-gnu/14/libstdc++.so:
 
-CMakeFiles/demo_viewer.dir/src/viewer_utils.c.o:
+/lib/x86_64-linux-gnu/libm.so:
 
-_deps/glad-build/libglad.a:
+/lib/x86_64-linux-gnu/libm.so:
 
-/usr/lib/x86_64-linux-gnu/libglfw.so.3.4:
+/lib/x86_64-linux-gnu/libm.so:
 
-/usr/lib/gcc/x86_64-linux-gnu/14/libgcc.a:
+/lib/x86_64-linux-gnu/libm.so.6:
+
+/lib/x86_64-linux-gnu/libmvec.so.1:
 
 /usr/lib/gcc/x86_64-linux-gnu/14/libgcc_s.so:
 
@@ -55,6 +58,8 @@ _deps/glad-build/libglad.a:
 /usr/lib/gcc/x86_64-linux-gnu/14/libgcc_s.so:
 
 /lib/x86_64-linux-gnu/libgcc_s.so.1:
+
+/usr/lib/gcc/x86_64-linux-gnu/14/libgcc.a:
 
 /usr/lib/gcc/x86_64-linux-gnu/14/libgcc.a:
 
@@ -70,8 +75,6 @@ _deps/glad-build/libglad.a:
 
 /lib64/ld-linux-x86-64.so.2:
 
-/usr/lib/gcc/x86_64-linux-gnu/14/libgcc.a:
-
 /usr/lib/gcc/x86_64-linux-gnu/14/libgcc_s.so:
 
 /usr/lib/gcc/x86_64-linux-gnu/14/libgcc_s.so:
@@ -82,10 +85,10 @@ _deps/glad-build/libglad.a:
 
 /usr/lib/gcc/x86_64-linux-gnu/14/libgcc.a:
 
+/usr/lib/gcc/x86_64-linux-gnu/14/libgcc.a:
+
 /usr/lib/gcc/x86_64-linux-gnu/14/crtendS.o:
 
 /lib/x86_64-linux-gnu/crtn.o:
-
-/lib/x86_64-linux-gnu/libm.so.6:
 
 /lib64/ld-linux-x86-64.so.2:

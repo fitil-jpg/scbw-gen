@@ -236,7 +236,7 @@ CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 DEMO_BUILD_TUI:BOOL=OFF
 
 //Build viewer component
-DEMO_BUILD_VIEWER:BOOL=ON
+DEMO_BUILD_VIEWER:BOOL=OFF
 
 //OpenGL loader to use
 DEMO_GL_LOADER:BOOL=OFF
@@ -324,7 +324,7 @@ GLAD_SOURCE_DIR:STATIC=/workspace/build/_deps/glad-src
 GLAD_SPEC:STRING=gl
 
 //The directory containing a CMake configuration file for glfw3.
-glfw3_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/glfw3
+glfw3_DIR:PATH=glfw3_DIR-NOTFOUND
 
 
 ########################

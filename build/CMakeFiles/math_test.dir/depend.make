@@ -1,2 +1,2 @@
-# Empty dependencies file for demo_viewer.
+# Empty dependencies file for math_test.
 # This may be replaced when dependencies are built.

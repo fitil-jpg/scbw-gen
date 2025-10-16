@@ -17,7 +17,7 @@ option(DEMO_INOTIFY_BACKEND "Inotify backend" "raw")
 
 # Find required packages
 find_package(Threads REQUIRED)
-find_package(glfw3 REQUIRED)
+find_package(glfw3)
 
 # Include GLAD
 include(FetchContent)
@@ -29,7 +29,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glad)
 
 # Add executable
-if(DEMO_BUILD_VIEWER)
+if(DEMO_BUILD_VIEWER AND glfw3_FOUND)
     add_executable(demo_viewer
         src/main.cpp
         src/viewer.cpp

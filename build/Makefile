@@ -117,17 +117,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named demo_viewer
+# Target rules for targets named math_test
 
 # Build rule for target.
-demo_viewer: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 demo_viewer
-.PHONY : demo_viewer
+math_test: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 math_test
+.PHONY : math_test
 
 # fast build rule for target.
-demo_viewer/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/demo_viewer.dir/build.make CMakeFiles/demo_viewer.dir/build
-.PHONY : demo_viewer/fast
+math_test/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/math_test.dir/build.make CMakeFiles/math_test.dir/build
+.PHONY : math_test/fast
 
 #=============================================================================
 # Target rules for targets named glad-generate-files
@@ -155,77 +155,29 @@ glad/fast:
 	$(MAKE) $(MAKESILENT) -f _deps/glad-build/CMakeFiles/glad.dir/build.make _deps/glad-build/CMakeFiles/glad.dir/build
 .PHONY : glad/fast
 
-src/main.o: src/main.c.o
-.PHONY : src/main.o
+src/math_test.o: src/math_test.cpp.o
+.PHONY : src/math_test.o
 
 # target to build an object file
-src/main.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/demo_viewer.dir/build.make CMakeFiles/demo_viewer.dir/src/main.c.o
-.PHONY : src/main.c.o
+src/math_test.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/math_test.dir/build.make CMakeFiles/math_test.dir/src/math_test.cpp.o
+.PHONY : src/math_test.cpp.o
 
-src/main.i: src/main.c.i
-.PHONY : src/main.i
-
-# target to preprocess a source file
-src/main.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/demo_viewer.dir/build.make CMakeFiles/demo_viewer.dir/src/main.c.i
-.PHONY : src/main.c.i
-
-src/main.s: src/main.c.s
-.PHONY : src/main.s
-
-# target to generate assembly for a file
-src/main.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/demo_viewer.dir/build.make CMakeFiles/demo_viewer.dir/src/main.c.s
-.PHONY : src/main.c.s
-
-src/viewer.o: src/viewer.c.o
-.PHONY : src/viewer.o
-
-# target to build an object file
-src/viewer.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/demo_viewer.dir/build.make CMakeFiles/demo_viewer.dir/src/viewer.c.o
-.PHONY : src/viewer.c.o
-
-src/viewer.i: src/viewer.c.i
-.PHONY : src/viewer.i
+src/math_test.i: src/math_test.cpp.i
+.PHONY : src/math_test.i
 
 # target to preprocess a source file
-src/viewer.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/demo_viewer.dir/build.make CMakeFiles/demo_viewer.dir/src/viewer.c.i
-.PHONY : src/viewer.c.i
+src/math_test.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/math_test.dir/build.make CMakeFiles/math_test.dir/src/math_test.cpp.i
+.PHONY : src/math_test.cpp.i
 
-src/viewer.s: src/viewer.c.s
-.PHONY : src/viewer.s
-
-# target to generate assembly for a file
-src/viewer.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/demo_viewer.dir/build.make CMakeFiles/demo_viewer.dir/src/viewer.c.s
-.PHONY : src/viewer.c.s
-
-src/viewer_utils.o: src/viewer_utils.c.o
-.PHONY : src/viewer_utils.o
-
-# target to build an object file
-src/viewer_utils.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/demo_viewer.dir/build.make CMakeFiles/demo_viewer.dir/src/viewer_utils.c.o
-.PHONY : src/viewer_utils.c.o
-
-src/viewer_utils.i: src/viewer_utils.c.i
-.PHONY : src/viewer_utils.i
-
-# target to preprocess a source file
-src/viewer_utils.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/demo_viewer.dir/build.make CMakeFiles/demo_viewer.dir/src/viewer_utils.c.i
-.PHONY : src/viewer_utils.c.i
-
-src/viewer_utils.s: src/viewer_utils.c.s
-.PHONY : src/viewer_utils.s
+src/math_test.s: src/math_test.cpp.s
+.PHONY : src/math_test.s
 
 # target to generate assembly for a file
-src/viewer_utils.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/demo_viewer.dir/build.make CMakeFiles/demo_viewer.dir/src/viewer_utils.c.s
-.PHONY : src/viewer_utils.c.s
+src/math_test.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/math_test.dir/build.make CMakeFiles/math_test.dir/src/math_test.cpp.s
+.PHONY : src/math_test.cpp.s
 
 # Help Target
 help:
@@ -236,17 +188,11 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... glad-generate-files"
-	@echo "... demo_viewer"
 	@echo "... glad"
-	@echo "... src/main.o"
-	@echo "... src/main.i"
-	@echo "... src/main.s"
-	@echo "... src/viewer.o"
-	@echo "... src/viewer.i"
-	@echo "... src/viewer.s"
-	@echo "... src/viewer_utils.o"
-	@echo "... src/viewer_utils.i"
-	@echo "... src/viewer_utils.s"
+	@echo "... math_test"
+	@echo "... src/math_test.o"
+	@echo "... src/math_test.i"
+	@echo "... src/math_test.s"
 .PHONY : help
 
 

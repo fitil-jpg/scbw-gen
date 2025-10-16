@@ -6,5 +6,5 @@ C_DEFINES =
 
 C_INCLUDES = -I/workspace/build/_deps/glad-build/include
 
-C_FLAGS = -std=gnu99
+C_FLAGS = 
 
