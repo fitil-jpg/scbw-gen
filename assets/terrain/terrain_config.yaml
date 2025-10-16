@@ -1,0 +1,62 @@
+# Конфігурація рельєфу та текстур
+# Різні типи місцевості з відповідними текстурами
+
+terrain_types:
+  grassland:
+    texture: "grass_01.png"
+    color: [0.2, 0.6, 0.2]
+    height_variation: 0.1
+    description: "Зелені луки"
+    
+  desert:
+    texture: "sand_01.png"
+    color: [0.8, 0.6, 0.3]
+    height_variation: 0.3
+    description: "Пустеля"
+    
+  snow:
+    texture: "snow_01.png"
+    color: [0.9, 0.9, 0.9]
+    height_variation: 0.2
+    description: "Сніжна місцевість"
+    
+  forest:
+    texture: "forest_01.png"
+    color: [0.1, 0.4, 0.1]
+    height_variation: 0.15
+    description: "Ліс"
+    
+  mountain:
+    texture: "mountain_01.png"
+    color: [0.4, 0.3, 0.2]
+    height_variation: 0.5
+    description: "Гори"
+    
+  water:
+    texture: "water_01.png"
+    color: [0.1, 0.3, 0.8]
+    height_variation: 0.05
+    description: "Водна поверхня"
+
+# Додаткові об'єкти рельєфу
+objects:
+  tree:
+    sprite: "tree_01.png"
+    size: [32, 48]
+    scale: 1.0
+    blocking: true
+    description: "Дерево"
+    
+  rock:
+    sprite: "rock_01.png"
+    size: [24, 24]
+    scale: 0.8
+    blocking: true
+    description: "Камінь"
+    
+  flower:
+    sprite: "flower_01.png"
+    size: [16, 16]
+    scale: 0.5
+    blocking: false
+    description: "Квітка"

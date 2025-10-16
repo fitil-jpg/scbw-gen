@@ -1,0 +1,69 @@
+# Конфігурація юнітів
+# Кожен юніт має спрайт (PNG) та метадані
+
+units:
+  warrior:
+    sprite: "warrior.png"
+    size: [32, 32]
+    scale: 1.0
+    health: 100
+    damage: 25
+    speed: 1.0
+    cost: 50
+    
+  archer:
+    sprite: "archer.png"
+    size: [28, 28]
+    scale: 0.8
+    health: 60
+    damage: 20
+    speed: 1.2
+    cost: 40
+    range: 5.0
+    
+  mage:
+    sprite: "mage.png"
+    size: [30, 30]
+    scale: 0.9
+    health: 40
+    damage: 35
+    speed: 0.8
+    cost: 80
+    magic: true
+    
+  knight:
+    sprite: "knight.png"
+    size: [36, 36]
+    scale: 1.2
+    health: 150
+    damage: 40
+    speed: 0.9
+    cost: 100
+    
+  dragon:
+    sprite: "dragon.png"
+    size: [64, 64]
+    scale: 2.0
+    health: 300
+    damage: 60
+    speed: 1.5
+    cost: 200
+    flying: true
+
+# Формації юнітів
+formations:
+  line:
+    description: "Лінійна формація"
+    spacing: 2.0
+    
+  arc:
+    description: "Дугова формація"
+    spacing: 1.5
+    
+  back:
+    description: "Формація ззаду"
+    spacing: 3.0
+    
+  random:
+    description: "Випадкове розміщення"
+    spacing: 1.0
