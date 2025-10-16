@@ -1,0 +1,1 @@
+/usr/bin/cc -Xlinker --dependency-file=CMakeFiles/demo_viewer.dir/link.d CMakeFiles/demo_viewer.dir/src/main.c.o CMakeFiles/demo_viewer.dir/src/viewer.c.o CMakeFiles/demo_viewer.dir/src/viewer_utils.c.o -o demo_viewer  _deps/glad-build/libglad.a /usr/lib/x86_64-linux-gnu/libglfw.so.3.4
