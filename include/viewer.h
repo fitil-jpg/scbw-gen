@@ -15,6 +15,11 @@ typedef struct {
     // Наприклад: RenderMode current_mode;
     int initialized;
     float clear_color[4];
+    int window_width;
+    int window_height;
+    int show_pathfinding;
+    int show_unit_placement;
+    int show_movement_paths;
 } Viewer;
 
 // REF_PLACE_14: Тут можна додати рефи на функції ініціалізації
@@ -37,3 +42,10 @@ typedef struct {
 void viewer_init(Viewer* viewer);
 void viewer_render(Viewer* viewer);
 void viewer_cleanup(Viewer* viewer);
+
+// Функції для pathfinding та unit placement
+void viewer_toggle_pathfinding_visualization(Viewer* viewer);
+void viewer_toggle_unit_placement_visualization(Viewer* viewer);
+void viewer_toggle_movement_paths_visualization(Viewer* viewer);
+void viewer_set_clear_color(Viewer* viewer, float r, float g, float b, float a);
+void viewer_set_window_size(Viewer* viewer, int width, int height);
