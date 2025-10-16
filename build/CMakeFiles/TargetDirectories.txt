@@ -1,0 +1,8 @@
+/workspace/build/CMakeFiles/demo_viewer.dir
+/workspace/build/CMakeFiles/math_test.dir
+/workspace/build/CMakeFiles/edit_cache.dir
+/workspace/build/CMakeFiles/rebuild_cache.dir
+/workspace/build/_deps/glad-build/CMakeFiles/glad-generate-files.dir
+/workspace/build/_deps/glad-build/CMakeFiles/glad.dir
+/workspace/build/_deps/glad-build/CMakeFiles/edit_cache.dir
+/workspace/build/_deps/glad-build/CMakeFiles/rebuild_cache.dir

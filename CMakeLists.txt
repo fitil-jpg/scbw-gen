@@ -41,6 +41,7 @@ if(DEMO_BUILD_VIEWER)
     # Include directories
     target_include_directories(demo_viewer PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/math
     )
 endif()
 
@@ -53,6 +54,16 @@ if(DEMO_BUILD_TUI)
         Threads::Threads
     )
 endif()
+
+# Math engine test
+add_executable(math_test
+    src/math_test.cpp
+)
+
+target_include_directories(math_test PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/math
+)
 
 # Compiler-specific options
 if(MSVC)

@@ -1,0 +1,1143 @@
+#usda 1.0
+(
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def "World"
+{
+    def DomeLight "Sun"
+    {
+        color3f inputs:color = (1, 0.95, 0.8)
+        float inputs:intensity = 1
+    }
+
+    def DomeLight "Ambient"
+    {
+        color3f inputs:color = (1, 1, 1)
+        float inputs:intensity = 0.3
+    }
+
+    def Plane "Terrain"
+    {
+        uniform token axis = "Y"
+        rel material:binding = </World/Terrain/Material>
+        float3 xformOp:scale = (100, 1, 100)
+        uniform token[] xformOpOrder = ["xformOp:scale"]
+
+        def Material "Material"
+        {
+            token outputs:surface.connect = </World/Terrain/Material/Shader.outputs:surface>
+
+            def Shader "Shader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (0.2, 0.6, 0.2)
+                token outputs:surface
+            }
+        }
+    }
+
+    def "Units"
+    {
+        def Cube "warrior_0"
+        {
+            rel material:binding = </World/Units/warrior_0/Material>
+            double size = 1
+            double3 xformOp:translate = (10, 0.5, 10)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_0/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_3"
+        {
+            rel material:binding = </World/Units/warrior_3/Material>
+            double size = 1
+            double3 xformOp:translate = (11.428571701049805, 0.5, 11.428571701049805)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_3/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_6"
+        {
+            rel material:binding = </World/Units/warrior_6/Material>
+            double size = 1
+            double3 xformOp:translate = (12.857142448425293, 0.5, 12.857142448425293)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_6/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_9"
+        {
+            rel material:binding = </World/Units/warrior_9/Material>
+            double size = 1
+            double3 xformOp:translate = (14.285714149475098, 0.5, 14.285714149475098)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_9/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_12"
+        {
+            rel material:binding = </World/Units/warrior_12/Material>
+            double size = 1
+            double3 xformOp:translate = (15.714285850524902, 0.5, 15.714285850524902)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_12/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_15"
+        {
+            rel material:binding = </World/Units/warrior_15/Material>
+            double size = 1
+            double3 xformOp:translate = (17.14285659790039, 0.5, 17.14285659790039)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_15/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_18"
+        {
+            rel material:binding = </World/Units/warrior_18/Material>
+            double size = 1
+            double3 xformOp:translate = (18.571428298950195, 0.5, 18.571428298950195)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_18/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_21"
+        {
+            rel material:binding = </World/Units/warrior_21/Material>
+            double size = 1
+            double3 xformOp:translate = (20, 0.5, 20)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_21/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_24"
+        {
+            rel material:binding = </World/Units/warrior_24/Material>
+            double size = 1
+            double3 xformOp:translate = (21.428571701049805, 0.5, 21.428571701049805)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_24/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_27"
+        {
+            rel material:binding = </World/Units/warrior_27/Material>
+            double size = 1
+            double3 xformOp:translate = (22.85714340209961, 0.5, 22.85714340209961)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_27/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_30"
+        {
+            rel material:binding = </World/Units/warrior_30/Material>
+            double size = 1
+            double3 xformOp:translate = (24.285715103149414, 0.5, 24.285715103149414)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_30/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_33"
+        {
+            rel material:binding = </World/Units/warrior_33/Material>
+            double size = 1
+            double3 xformOp:translate = (25.714284896850586, 0.5, 25.714284896850586)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_33/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_36"
+        {
+            rel material:binding = </World/Units/warrior_36/Material>
+            double size = 1
+            double3 xformOp:translate = (27.14285659790039, 0.5, 27.14285659790039)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_36/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_39"
+        {
+            rel material:binding = </World/Units/warrior_39/Material>
+            double size = 1
+            double3 xformOp:translate = (28.571428298950195, 0.5, 28.571428298950195)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_39/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_42"
+        {
+            rel material:binding = </World/Units/warrior_42/Material>
+            double size = 1
+            double3 xformOp:translate = (30, 0.5, 30)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_42/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "archer_45"
+        {
+            rel material:binding = </World/Units/archer_45/Material>
+            double size = 0.8
+            double3 xformOp:translate = (26.66666603088379, 0.4000000059604645, 20)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/archer_45/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "archer_48"
+        {
+            rel material:binding = </World/Units/archer_48/Material>
+            double size = 0.8
+            double3 xformOp:translate = (26.264617919921875, 0.4000000059604645, 22.280134201049805)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/archer_48/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "archer_51"
+        {
+            rel material:binding = </World/Units/archer_51/Material>
+            double size = 0.8
+            double3 xformOp:translate = (25.106962203979492, 0.4000000059604645, 24.28525161743164)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/archer_51/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "archer_54"
+        {
+            rel material:binding = </World/Units/archer_54/Material>
+            double size = 0.8
+            double3 xformOp:translate = (23.33333396911621, 0.4000000059604645, 25.773502349853516)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/archer_54/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "archer_57"
+        {
+            rel material:binding = </World/Units/archer_57/Material>
+            double size = 0.8
+            double3 xformOp:translate = (21.15765380859375, 0.4000000059604645, 26.565385818481445)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/archer_57/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "archer_60"
+        {
+            rel material:binding = </World/Units/archer_60/Material>
+            double size = 0.8
+            double3 xformOp:translate = (18.84234619140625, 0.4000000059604645, 26.565385818481445)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/archer_60/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "archer_63"
+        {
+            rel material:binding = </World/Units/archer_63/Material>
+            double size = 0.8
+            double3 xformOp:translate = (16.66666603088379, 0.4000000059604645, 25.773502349853516)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/archer_63/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "archer_66"
+        {
+            rel material:binding = </World/Units/archer_66/Material>
+            double size = 0.8
+            double3 xformOp:translate = (14.893036842346191, 0.4000000059604645, 24.28525161743164)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/archer_66/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "archer_69"
+        {
+            rel material:binding = </World/Units/archer_69/Material>
+            double size = 0.8
+            double3 xformOp:translate = (13.735382080078125, 0.4000000059604645, 22.280134201049805)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/archer_69/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "archer_72"
+        {
+            rel material:binding = </World/Units/archer_72/Material>
+            double size = 0.8
+            double3 xformOp:translate = (13.333333015441895, 0.4000000059604645, 20)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/archer_72/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "mage_75"
+        {
+            rel material:binding = </World/Units/mage_75/Material>
+            double size = 0.9
+            double3 xformOp:translate = (10, 0.44999998807907104, 10)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/mage_75/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "mage_78"
+        {
+            rel material:binding = </World/Units/mage_78/Material>
+            double size = 0.9
+            double3 xformOp:translate = (20, 0.44999998807907104, 13)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/mage_78/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "mage_81"
+        {
+            rel material:binding = </World/Units/mage_81/Material>
+            double size = 0.9
+            double3 xformOp:translate = (30, 0.44999998807907104, 16)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/mage_81/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_84"
+        {
+            rel material:binding = </World/Units/warrior_84/Material>
+            double size = 1
+            double3 xformOp:translate = (60, 0.5, 60)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_84/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.8, 0.2, 0.2)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_87"
+        {
+            rel material:binding = </World/Units/warrior_87/Material>
+            double size = 1
+            double3 xformOp:translate = (61.818180084228516, 0.5, 61.818180084228516)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_87/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.8, 0.2, 0.2)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_90"
+        {
+            rel material:binding = </World/Units/warrior_90/Material>
+            double size = 1
+            double3 xformOp:translate = (63.6363639831543, 0.5, 63.6363639831543)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_90/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.8, 0.2, 0.2)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_93"
+        {
+            rel material:binding = </World/Units/warrior_93/Material>
+            double size = 1
+            double3 xformOp:translate = (65.45454406738281, 0.5, 65.45454406738281)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_93/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.8, 0.2, 0.2)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_96"
+        {
+            rel material:binding = </World/Units/warrior_96/Material>
+            double size = 1
+            double3 xformOp:translate = (67.2727279663086, 0.5, 67.2727279663086)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_96/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.8, 0.2, 0.2)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_99"
+        {
+            rel material:binding = </World/Units/warrior_99/Material>
+            double size = 1
+            double3 xformOp:translate = (69.09091186523438, 0.5, 69.09091186523438)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_99/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.8, 0.2, 0.2)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_102"
+        {
+            rel material:binding = </World/Units/warrior_102/Material>
+            double size = 1
+            double3 xformOp:translate = (70.90908813476562, 0.5, 70.90908813476562)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_102/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.8, 0.2, 0.2)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_105"
+        {
+            rel material:binding = </World/Units/warrior_105/Material>
+            double size = 1
+            double3 xformOp:translate = (72.7272720336914, 0.5, 72.7272720336914)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_105/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.8, 0.2, 0.2)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_108"
+        {
+            rel material:binding = </World/Units/warrior_108/Material>
+            double size = 1
+            double3 xformOp:translate = (74.54545593261719, 0.5, 74.54545593261719)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_108/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.8, 0.2, 0.2)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_111"
+        {
+            rel material:binding = </World/Units/warrior_111/Material>
+            double size = 1
+            double3 xformOp:translate = (76.36363983154297, 0.5, 76.36363983154297)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_111/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.8, 0.2, 0.2)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_114"
+        {
+            rel material:binding = </World/Units/warrior_114/Material>
+            double size = 1
+            double3 xformOp:translate = (78.18181610107422, 0.5, 78.18181610107422)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_114/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.8, 0.2, 0.2)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "warrior_117"
+        {
+            rel material:binding = </World/Units/warrior_117/Material>
+            double size = 1
+            double3 xformOp:translate = (80, 0.5, 80)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/warrior_117/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.8, 0.2, 0.2)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "archer_120"
+        {
+            rel material:binding = </World/Units/archer_120/Material>
+            double size = 0.8
+            double3 xformOp:translate = (76.66666412353516, 0.4000000059604645, 70)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/archer_120/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.8, 0.2, 0.2)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "archer_123"
+        {
+            rel material:binding = </World/Units/archer_123/Material>
+            double size = 0.8
+            double3 xformOp:translate = (76.00646209716797, 0.4000000059604645, 72.8925552368164)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/archer_123/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.8, 0.2, 0.2)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "archer_126"
+        {
+            rel material:binding = </World/Units/archer_126/Material>
+            double size = 0.8
+            double3 xformOp:translate = (74.15660095214844, 0.4000000059604645, 75.21221160888672)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/archer_126/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.8, 0.2, 0.2)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "archer_129"
+        {
+            rel material:binding = </World/Units/archer_129/Material>
+            double size = 0.8
+            double3 xformOp:translate = (71.48347473144531, 0.4000000059604645, 76.49951934814453)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/archer_129/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.8, 0.2, 0.2)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "archer_132"
+        {
+            rel material:binding = </World/Units/archer_132/Material>
+            double size = 0.8
+            double3 xformOp:translate = (68.51652526855469, 0.4000000059604645, 76.49951934814453)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/archer_132/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.8, 0.2, 0.2)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "archer_135"
+        {
+            rel material:binding = </World/Units/archer_135/Material>
+            double size = 0.8
+            double3 xformOp:translate = (65.84339904785156, 0.4000000059604645, 75.21221160888672)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/archer_135/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.8, 0.2, 0.2)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "archer_138"
+        {
+            rel material:binding = </World/Units/archer_138/Material>
+            double size = 0.8
+            double3 xformOp:translate = (63.9935417175293, 0.4000000059604645, 72.8925552368164)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/archer_138/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.8, 0.2, 0.2)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "archer_141"
+        {
+            rel material:binding = </World/Units/archer_141/Material>
+            double size = 0.8
+            double3 xformOp:translate = (63.33333206176758, 0.4000000059604645, 70)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/archer_141/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.8, 0.2, 0.2)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "mage_144"
+        {
+            rel material:binding = </World/Units/mage_144/Material>
+            double size = 0.9
+            double3 xformOp:translate = (60, 0.44999998807907104, 60)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/mage_144/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.8, 0.2, 0.2)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "mage_147"
+        {
+            rel material:binding = </World/Units/mage_147/Material>
+            double size = 0.9
+            double3 xformOp:translate = (80, 0.44999998807907104, 63)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Units/mage_147/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.8, 0.2, 0.2)
+                    token outputs:surface
+                }
+            }
+        }
+    }
+
+    def "Buildings"
+    {
+        def Cube "castle_0"
+        {
+            rel material:binding = </World/Buildings/castle_0/Material>
+            double size = 2
+            float xformOp:rotateY = 0
+            double3 xformOp:translate = (50, 1, 50)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateY"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Buildings/castle_0/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.5, 0.5, 0.5)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "tower_1"
+        {
+            rel material:binding = </World/Buildings/tower_1/Material>
+            double size = 1.6
+            float xformOp:rotateY = 45
+            double3 xformOp:translate = (20, 0.800000011920929, 20)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateY"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Buildings/tower_1/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.2, 0.4, 0.8)
+                    token outputs:surface
+                }
+            }
+        }
+
+        def Cube "tower_2"
+        {
+            rel material:binding = </World/Buildings/tower_2/Material>
+            double size = 1.6
+            float xformOp:rotateY = -45
+            double3 xformOp:translate = (80, 0.800000011920929, 80)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateY"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Buildings/tower_2/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (0.8, 0.2, 0.2)
+                    token outputs:surface
+                }
+            }
+        }
+    }
+
+    def "Effects"
+    {
+        def Sphere "magic_aura_0"
+        {
+            rel material:binding = </World/Effects/magic_aura_0/Material>
+            double radius = 10
+            double3 xformOp:translate = (50, 2, 50)
+            uniform token[] xformOpOrder = ["xformOp:translate"]
+
+            def Material "Material"
+            {
+                token outputs:surface.connect = </World/Effects/magic_aura_0/Material/Shader.outputs:surface>
+
+                def Shader "Shader"
+                {
+                    uniform token info:id = "UsdPreviewSurface"
+                    color3f inputs:diffuseColor = (1, 0, 1)
+                    float inputs:opacity = 0.7
+                    token outputs:surface
+                }
+            }
+        }
+    }
+
+    def Camera "Camera"
+    {
+        float focalLength = 50
+        float xformOp:rotateX = -0
+        float xformOp:rotateY = 180
+        double3 xformOp:translate = (50, 50, 80)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:rotateY", "xformOp:rotateX"]
+    }
+}
+

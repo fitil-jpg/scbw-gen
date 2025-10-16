@@ -16,6 +16,10 @@ import random
 from pathlib import Path
 from typing import Dict, List, Tuple, Any
 
+# Додати математичний движок
+sys.path.append(os.path.join(os.path.dirname(__file__), 'python_math'))
+from math_engine import Vec3, Transform, FormationGenerator, Camera, GeometryUtils
+
 try:
     from pxr import Usd, UsdGeom, UsdLux, Gf, Sdf, UsdShade
     USD_AVAILABLE = True
@@ -71,9 +75,8 @@ class USDSceneGenerator:
         )
         
         # Створити directional light (сонце)
-        sun_light = UsdLux.DirectionalLight.Define(self.stage, "/World/Sun")
+        sun_light = UsdLux.DomeLight.Define(self.stage, "/World/Sun")
         sun_light.CreateIntensityAttr(sun_intensity)
-        sun_light.CreateDirectionAttr(sun_direction)
         sun_light.CreateColorAttr(Gf.Vec3f(1.0, 0.95, 0.8))
         
         # Додати ambient light
@@ -93,7 +96,9 @@ class USDSceneGenerator:
         
         # Створити площину для рельєфу
         plane = UsdGeom.Plane.Define(self.stage, "/World/Terrain")
-        plane.CreateSizeAttr(100.0)  # Розмір площини
+        plane.CreateAxisAttr("Y")  # Вісь площини
+        # Масштабуємо площину
+        UsdGeom.XformCommonAPI(plane).SetScale(Gf.Vec3f(100.0, 1.0, 100.0))
         
         # Додати матеріал
         material = UsdShade.Material.Define(self.stage, "/World/Terrain/Material")
@@ -116,7 +121,9 @@ class USDSceneGenerator:
     def create_unit(self, unit_type: str, position: Tuple[float, float], army_color: List[float], 
                    scale: float = 1.0) -> str:
         """Створити юніт в сцені"""
-        unit_path = f"/World/Units/{unit_type}_{len(self.stage.Traverse())}"
+        # Генеруємо унікальний індекс
+        unit_count = sum(1 for _ in self.stage.Traverse() if "/World/Units/" in str(_))
+        unit_path = f"/World/Units/{unit_type}_{unit_count}"
         
         # Створити куб як базову форму юніта
         cube = UsdGeom.Cube.Define(self.stage, unit_path)
@@ -166,24 +173,23 @@ class USDSceneGenerator:
         x1, y1, x2, y2 = spawn_area
         positions = []
         
+        # Конвертуємо в 3D координати для математичного движка
+        start_3d = Vec3(x1, 0, y1)
+        end_3d = Vec3(x2, 0, y2)
+        center_3d = Vec3((x1 + x2) / 2, 0, (y1 + y2) / 2)
+        radius = min(x2 - x1, y2 - y1) / 3
+        
         if formation == 'line':
             # Лінійна формація
-            for i in range(count):
-                x = x1 + (x2 - x1) * i / max(1, count - 1)
-                y = (y1 + y2) / 2
-                positions.append((x, y))
+            line_positions = FormationGenerator.create_line_formation(start_3d, end_3d, count)
+            positions = [(pos.x, pos.z) for pos in line_positions]
                 
         elif formation == 'arc':
             # Дугова формація
-            center_x = (x1 + x2) / 2
-            center_y = (y1 + y2) / 2
-            radius = min(x2 - x1, y2 - y1) / 3
-            
-            for i in range(count):
-                angle = math.pi * i / max(1, count - 1)
-                x = center_x + radius * math.cos(angle)
-                y = center_y + radius * math.sin(angle)
-                positions.append((x, y))
+            arc_positions = FormationGenerator.create_arc_formation(
+                center_3d, radius, 0, math.pi, count
+            )
+            positions = [(pos.x, pos.z) for pos in arc_positions]
                 
         elif formation == 'back':
             # Формація ззаду
@@ -192,12 +198,30 @@ class USDSceneGenerator:
                 y = y1 + spacing * i
                 positions.append((x, y))
                 
+        elif formation == 'circle':
+            # Кругова формація
+            circle_positions = FormationGenerator.create_circle_formation(
+                center_3d, radius, count
+            )
+            positions = [(pos.x, pos.z) for pos in circle_positions]
+                
+        elif formation == 'grid':
+            # Сіткова формація
+            rows = int(math.sqrt(count))
+            cols = (count + rows - 1) // rows
+            grid_positions = FormationGenerator.create_grid_formation(
+                center_3d, rows, cols, spacing
+            )
+            positions = [(pos.x, pos.z) for pos in grid_positions[:count]]
+                
         else:  # random
             # Випадкове розміщення
-            for _ in range(count):
-                x = random.uniform(x1, x2)
-                y = random.uniform(y1, y2)
-                positions.append((x, y))
+            min_3d = Vec3(x1, 0, y1)
+            max_3d = Vec3(x2, 0, y2)
+            random_positions = FormationGenerator.create_random_formation(
+                min_3d, max_3d, count
+            )
+            positions = [(pos.x, pos.z) for pos in random_positions]
         
         return positions
     
@@ -286,16 +310,32 @@ class USDSceneGenerator:
         target = camera_config.get('target', [50, 50, 0])
         fov = camera_config.get('fov', 60)
         
-        camera = UsdGeom.Camera.Define(self.stage, "/World/Camera")
-        camera.CreateFocalLengthAttr(50.0)  # Приблизний FOV
-        camera.AddTranslateOp().Set(Gf.Vec3f(*position))
+        # Використовуємо математичний движок для камери
+        camera_pos = Vec3(*position)
+        camera_target = Vec3(*target)
+        camera = Camera(camera_pos, camera_target)
         
-        # Направити камеру на ціль
-        look_at = Gf.Vec3f(*target) - Gf.Vec3f(*position)
-        look_at.Normalize()
+        # Налаштувати камеру
+        camera.fov = fov
+        camera.aspect = 16.0 / 9.0  # Можна зчитати з конфігурації
         
-        # Простий поворот камери (можна покращити)
-        camera.AddRotateYOp().Set(math.degrees(math.atan2(look_at[0], look_at[2])))
+        # Створити USD камеру
+        usd_camera = UsdGeom.Camera.Define(self.stage, "/World/Camera")
+        usd_camera.CreateFocalLengthAttr(50.0)  # Приблизний FOV
+        usd_camera.AddTranslateOp().Set(Gf.Vec3f(*position))
+        
+        # Направити камеру на ціль використовуючи математичний движок
+        forward = camera.get_forward()
+        right = camera.get_right()
+        up = camera.get_up()
+        
+        # Обчислити поворот камери
+        yaw = math.degrees(math.atan2(forward.x, forward.z))
+        pitch = math.degrees(math.asin(-forward.y))
+        
+        # Застосувати поворот
+        usd_camera.AddRotateYOp().Set(yaw)
+        usd_camera.AddRotateXOp().Set(pitch)
     
     def generate_scene(self):
         """Згенерувати повну сцену"""
@@ -306,7 +346,9 @@ class USDSceneGenerator:
             return False
         
         # Створити директорію виводу
-        os.makedirs(os.path.dirname(self.output_path), exist_ok=True)
+        output_dir = os.path.dirname(self.output_path)
+        if output_dir:
+            os.makedirs(output_dir, exist_ok=True)
         
         # Створити stage
         self.create_stage()
