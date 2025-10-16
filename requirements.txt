@@ -1,2 +1,9 @@
 # Dependencies for Houdini automation helpers
 pyyaml>=6.0
+
+# Dependencies for Blender pipeline
+# Note: bpy (Blender Python API) is included with Blender installation
+# Additional dependencies for image processing and EXR handling:
+Pillow>=9.0.0
+OpenEXR>=1.3.0
+numpy>=1.21.0
