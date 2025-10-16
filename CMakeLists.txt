@@ -15,6 +15,7 @@ option(DEMO_INOTIFY_BACKEND "Inotify backend" "raw")
 # Find required packages
 find_package(Threads REQUIRED)
 find_package(glfw3 REQUIRED)
+find_package(OpenEXR REQUIRED)
 
 # Include GLAD
 include(FetchContent)
@@ -30,11 +31,15 @@ if(DEMO_BUILD_VIEWER)
     add_executable(demo_viewer
         src/main.cpp
         src/viewer.cpp
+        src/exr_processor.cpp
+        src/image_filters.cpp
+        src/compositor.cpp
     )
     
     target_link_libraries(demo_viewer
         glad
         glfw
+        OpenEXR::OpenEXR
         Threads::Threads
     )
     
@@ -53,6 +58,23 @@ if(DEMO_BUILD_TUI)
         Threads::Threads
     )
 endif()
+
+# Add EXR examples
+add_executable(exr_demo
+    examples/exr_demo.cpp
+    src/exr_processor.cpp
+    src/image_filters.cpp
+    src/compositor.cpp
+)
+
+target_link_libraries(exr_demo
+    OpenEXR::OpenEXR
+    Threads::Threads
+)
+
+target_include_directories(exr_demo PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 
 # Compiler-specific options
 if(MSVC)
