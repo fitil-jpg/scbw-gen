@@ -1,0 +1,93 @@
+# Scene Configuration for USD Generation
+# Конфігурація сцени для генерації USD
+
+scene:
+  name: "Battle Scene"
+  size: [100, 100]  # ширина x висота в юнітах
+  terrain:
+    type: "grassland"
+    height_variation: 0.2
+    texture: "terrain/grass_01.png"
+  
+  lighting:
+    sun_angle: [45, 30]  # azimuth, elevation
+    ambient: 0.3
+    sun_intensity: 1.0
+
+# Правила розміщення юнітів
+units:
+  # Армія 1 (сині)
+  army_1:
+    color: [0.2, 0.4, 0.8]
+    spawn_area: [10, 10, 30, 30]  # x1, y1, x2, y2
+    units:
+      - type: "warrior"
+        count: 15
+        formation: "line"
+        spacing: 2.0
+      - type: "archer" 
+        count: 10
+        formation: "arc"
+        spacing: 1.5
+      - type: "mage"
+        count: 3
+        formation: "back"
+        spacing: 3.0
+
+  # Армія 2 (червоні)
+  army_2:
+    color: [0.8, 0.2, 0.2]
+    spawn_area: [60, 60, 80, 80]
+    units:
+      - type: "warrior"
+        count: 12
+        formation: "line"
+        spacing: 2.0
+      - type: "archer"
+        count: 8
+        formation: "arc"
+        spacing: 1.5
+      - type: "mage"
+        count: 2
+        formation: "back"
+        spacing: 3.0
+
+# Будівлі та об'єкти
+buildings:
+  - type: "castle"
+    position: [50, 50]
+    rotation: 0
+    scale: 1.0
+    owner: "neutral"
+  
+  - type: "tower"
+    position: [20, 20]
+    rotation: 45
+    scale: 0.8
+    owner: "army_1"
+    
+  - type: "tower"
+    position: [80, 80]
+    rotation: -45
+    scale: 0.8
+    owner: "army_2"
+
+# Ефекти та магія
+effects:
+  - type: "magic_aura"
+    position: [50, 50]
+    radius: 10
+    color: [1.0, 0.0, 1.0]
+    intensity: 0.7
+
+# Налаштування камери
+camera:
+  position: [50, 50, 80]
+  target: [50, 50, 0]
+  fov: 60
+
+# Налаштування рендерингу
+render:
+  resolution: [1920, 1080]
+  samples: 64
+  output_format: "usda"

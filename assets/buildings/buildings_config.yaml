@@ -1,0 +1,69 @@
+# Конфігурація будівель
+# Кожна будівля має спрайт (PNG) та метадані
+
+buildings:
+  castle:
+    sprite: "castle.png"
+    size: [128, 128]
+    scale: 2.0
+    health: 500
+    cost: 500
+    description: "Головна будівля"
+    
+  tower:
+    sprite: "tower.png"
+    size: [64, 64]
+    scale: 1.0
+    health: 200
+    cost: 150
+    range: 8.0
+    description: "Оборонна вежа"
+    
+  barracks:
+    sprite: "barracks.png"
+    size: [80, 80]
+    scale: 1.2
+    health: 300
+    cost: 200
+    production: ["warrior", "archer"]
+    description: "Казарми для тренування воїнів"
+    
+  mage_tower:
+    sprite: "mage_tower.png"
+    size: [72, 72]
+    scale: 1.1
+    health: 250
+    cost: 300
+    production: ["mage"]
+    magic: true
+    description: "Вежа магів"
+    
+  wall:
+    sprite: "wall.png"
+    size: [32, 32]
+    scale: 0.8
+    health: 100
+    cost: 50
+    description: "Стіна"
+    
+  gate:
+    sprite: "gate.png"
+    size: [48, 48]
+    scale: 1.0
+    health: 150
+    cost: 75
+    description: "Ворота"
+
+# Кольори власників
+owners:
+  army_1:
+    color: [0.2, 0.4, 0.8]
+    name: "Синя армія"
+    
+  army_2:
+    color: [0.8, 0.2, 0.2]
+    name: "Червона армія"
+    
+  neutral:
+    color: [0.5, 0.5, 0.5]
+    name: "Нейтральна"

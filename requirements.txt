@@ -1,2 +1,7 @@
 # Dependencies for Houdini automation helpers
 pyyaml>=6.0
+
+# USD Scene Generator Dependencies
+usd-core>=23.05
+numpy>=1.21.0
+Pillow>=9.0.0

@@ -1,0 +1,83 @@
+# Конфігурація ефектів та магії
+# Візуальні ефекти для сцени
+
+effects:
+  magic_aura:
+    sprite: "magic_aura.png"
+    size: [64, 64]
+    scale: 1.0
+    animated: true
+    duration: 5.0
+    color: [1.0, 0.0, 1.0]
+    description: "Магічна аура"
+    
+  explosion:
+    sprite: "explosion.png"
+    size: [48, 48]
+    scale: 1.2
+    animated: true
+    duration: 1.0
+    color: [1.0, 0.5, 0.0]
+    description: "Вибух"
+    
+  heal:
+    sprite: "heal.png"
+    size: [32, 32]
+    scale: 0.8
+    animated: true
+    duration: 2.0
+    color: [0.0, 1.0, 0.0]
+    description: "Лікування"
+    
+  shield:
+    sprite: "shield.png"
+    size: [40, 40]
+    scale: 1.0
+    animated: true
+    duration: 10.0
+    color: [0.0, 0.5, 1.0]
+    description: "Захисний щит"
+    
+  fire:
+    sprite: "fire.png"
+    size: [24, 24]
+    scale: 0.6
+    animated: true
+    duration: 3.0
+    color: [1.0, 0.3, 0.0]
+    description: "Вогонь"
+    
+  ice:
+    sprite: "ice.png"
+    size: [28, 28]
+    scale: 0.7
+    animated: true
+    duration: 4.0
+    color: [0.5, 0.8, 1.0]
+    description: "Лід"
+
+# Частинки та ефекти
+particles:
+  dust:
+    sprite: "dust_particle.png"
+    size: [4, 4]
+    scale: 0.2
+    count: 50
+    lifetime: 2.0
+    color: [0.6, 0.4, 0.2]
+    
+  smoke:
+    sprite: "smoke_particle.png"
+    size: [8, 8]
+    scale: 0.4
+    count: 30
+    lifetime: 3.0
+    color: [0.3, 0.3, 0.3]
+    
+  sparkle:
+    sprite: "sparkle_particle.png"
+    size: [6, 6]
+    scale: 0.3
+    count: 20
+    lifetime: 1.5
+    color: [1.0, 1.0, 0.0]
