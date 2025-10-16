@@ -1,3 +1,4 @@
+# USD Scene Generator and Renderer
 # SCBW-Gen
 
 SCBW-Gen (StarCraft: Brood War Generator) is a collection of tools for building and rendering StarCraft: Brood War assets. The toolkit now centers on a Houdini-driven pipeline that automates the generation of multi-layer EXRs for downstream compositing and analysis.
@@ -5,8 +6,8 @@ SCBW-Gen (StarCraft: Brood War Generator) is a collection of tools for building 
 ## Prerequisites
 
 - **Houdini 19.5+ with _hython_** – the primary runtime for the asset pipeline. Ensure the Houdini installation directory is on your `PATH` so the `hython` interpreter is available from the command line.
-- **Python 3.10+** – optional, used for ancillary utilities and validation scripts outside of Houdini.
-- **Optional: Blender 3.x** – maintained as a fallback path for teams that cannot access Houdini, but not required for the main workflow.
+- **Blender 3.0+** – alternative pipeline for teams preferring Blender over Houdini. Provides the same multi-pass EXR generation capabilities.
+- **Python 3.10+** – used for ancillary utilities and validation scripts outside of Houdini/Blender.
 - Optional: Git for version control.
 
 ## Setup
@@ -71,9 +72,30 @@ The Houdini pipeline converts input StarCraft assets into multi-layer EXRs using
    - Each EXR contains separate layers for the standard RGBA, selection mask, and depth/utility passes configured in your Houdini network.
    - Use your preferred compositing package to inspect the renders or feed them into downstream batch tools.
 
-### Optional Blender Fallback
+## Blender Pipeline
 
-If Houdini access is unavailable, you may still adapt the legacy Blender scripts for simple sprite renders. This path is community-supported and not part of the primary pipeline; see `docs/blender_fallback.md` (when available) for community notes.
+The Blender pipeline provides an alternative to Houdini with equivalent functionality for multi-pass EXR generation. It uses the same configuration format and produces compatible outputs.
+
+### Blender Workflow
+
+1. **Prepare input assets** (same as Houdini pipeline)
+2. **Launch Blender automation**:
+   ```bash
+   blender --background --python blender/generate_passes.py \
+     -- --config params/pack.yaml \
+        --shot shot_1001 \
+        --output renders/blender
+   ```
+3. **Review outputs** - Same multi-layer EXR format as Houdini pipeline
+
+The Blender pipeline automatically generates:
+- StarCraft battle scenes with unit clusters
+- Portal/wormhole effects
+- HUD elements
+- Multi-pass renders (RGBA, mask, depth)
+- Packaged EXR outputs
+
+See `blender/README.md` for detailed Blender-specific documentation.
 
 ## Legacy Components
 
@@ -89,3 +111,78 @@ The historical Wolfram Language prototype (`wolfram/generate.wl`) remains in the
    ```
 4. Submit a pull request with a clear description of the changes.
 
+Цей проект демонструє генерацію USD сцени та її рендеринг з використанням OpenUSD та Storm рендер-делегата.
+
+## Файли проекту
+
+- `build_scene.py` - Генератор USD сцени
+- `scene.usda` - Згенерована USD сцена
+- `check_scene.py` - Скрипт для аналізу сцени
+- `render_scene.py` - Скрипт для рендерингу (потребує повний OpenUSD)
+
+## Встановлення залежностей
+
+```bash
+pip3 install usd-core
+```
+
+## Генерація сцени
+
+```bash
+python3 build_scene.py
+```
+
+Це створить файл `scene.usda` з простою 3D сценою, що містить:
+- Куб в центрі координат
+- Дальнє світло з налаштованим поворотом
+- Камеру з позицією та орієнтацією
+
+## Перевірка сцени
+
+```bash
+python3 check_scene.py
+```
+
+Це покаже детальну інформацію про всі примітиви в сцені.
+
+## Рендеринг
+
+Для рендерингу USD сцен рекомендується використовувати:
+
+### Варіант 1: usdrecord (якщо доступний)
+```bash
+usdrecord scene.usda output.png --camera /World/Camera --width 800 --height 600
+```
+
+### Варіант 2: Blender
+```bash
+# Встановлення Blender
+brew install --cask blender
+
+# Відкрити сцену в Blender
+blender --background --python -c "
+import bpy
+bpy.ops.wm.usd_import(filepath='scene.usda')
+bpy.ops.render.render(write_still=True, filepath='output.png')
+"
+```
+
+### Варіант 3: Houdini (якщо доступний)
+```bash
+# Відкрити сцену в Houdini
+houdini scene.usda
+```
+
+## Структура сцени
+
+Сцена містить:
+- **World** - кореневий контейнер
+- **Cube** - куб розміром 2x2x2 в центрі
+- **Light** - дальнє світло з поворотом (-45°, 45°, 0°)
+- **Camera** - камера в позиції (5, 5, 5) з поворотом (-30°, -45°, 0°)
+
+## Примітки
+
+- Storm рендер-делегат є частиною повного OpenUSD SDK
+- `usd-core` Python пакет містить тільки базові функції USD
+- Для повного рендерингу потрібен повний OpenUSD SDK або сумісний 3D додаток
