@@ -18,6 +18,7 @@ option(DEMO_INOTIFY_BACKEND "Inotify backend" "raw")
 # Find required packages
 find_package(Threads REQUIRED)
 find_package(glfw3 REQUIRED)
+find_package(OpenEXR REQUIRED)
 
 # Include GLAD
 include(FetchContent)
@@ -39,6 +40,7 @@ if(DEMO_BUILD_VIEWER)
     target_link_libraries(demo_viewer
         glad
         glfw
+        OpenEXR::OpenEXR
         Threads::Threads
     )
     
