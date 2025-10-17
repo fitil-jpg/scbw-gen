@@ -62,6 +62,11 @@ typedef struct {
     // Наприклад: RenderMode current_mode;
     int initialized;
     float clear_color[4];
+    int window_width;
+    int window_height;
+    int show_pathfinding;
+    int show_unit_placement;
+    int show_movement_paths;
 } Viewer;
 
 // REF_PLACE_14: Тут можна додати рефи на функції ініціалізації
