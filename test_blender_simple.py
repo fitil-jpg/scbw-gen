@@ -1,42 +1,61 @@
 #!/usr/bin/env python3
 """
-Simple test script for Blender SCBW pipeline
+Простий тестовий скрипт для Blender
 """
-import sys
-from pathlib import Path
+import bpy
+import os
 
-# Add workspace to Python path
-sys.path.insert(0, str(Path(__file__).parent))
-
-def test_dry_run():
-    """Test dry run mode without Blender modules."""
-    print("Testing Blender pipeline dry run...")
+def main():
+    print("🎬 Тестовий Blender скрипт")
+    print("=" * 30)
     
-    try:
-        from blender.config import load_pack_config, filter_shots
-        
-        # Load configuration
-        config = load_pack_config(Path("params/pack.yaml"))
-        print(f"✓ Loaded configuration with {len(config.shots)} shots")
-        
-        # Filter shots
-        selected_shots = filter_shots(config, ["shot_1001"])
-        print(f"✓ Selected {len(selected_shots)} shots")
-        
-        for shot in selected_shots:
-            print(f"  - Shot {shot.id}: palette={shot.palette}")
-            print(f"    Export: {shot.export}")
-        
-        return True
-    except Exception as e:
-        print(f"✗ Error: {e}")
-        return False
+    # Очищення сцени
+    bpy.ops.object.select_all(action='SELECT')
+    bpy.ops.object.delete(use_global=False)
+    
+    # Створення простого куба
+    bpy.ops.mesh.primitive_cube_add(size=2, location=(0, 0, 0))
+    cube = bpy.context.active_object
+    cube.name = "StarCraft_Cube"
+    
+    # Додавання матеріалу
+    mat = bpy.data.materials.new(name="StarCraft_Material")
+    mat.use_nodes = True
+    mat.node_tree.nodes["Principled BSDF"].inputs[0].default_value = (0.1, 0.3, 0.1, 1.0)  # Зелений колір
+    
+    cube.data.materials.append(mat)
+    
+    # Налаштування камери
+    bpy.ops.object.camera_add(location=(5, -5, 5))
+    camera = bpy.context.active_object
+    camera.rotation_euler = (1.1, 0, 0.785)
+    
+    # Встановлення камери як активної для рендерингу
+    bpy.context.scene.camera = camera
+    
+    # Налаштування освітлення
+    bpy.ops.object.light_add(type='SUN', location=(2, 2, 5))
+    light = bpy.context.active_object
+    light.data.energy = 3
+    
+    # Налаштування рендерингу
+    bpy.context.scene.render.engine = 'CYCLES'
+    bpy.context.scene.render.resolution_x = 1280
+    bpy.context.scene.render.resolution_y = 720
+    bpy.context.scene.render.filepath = "renders/blender/test_scene.png"
+    
+    # Вимкнення денойзингу
+    bpy.context.scene.cycles.use_denoising = False
+    
+    # Створення директорії
+    os.makedirs("renders/blender", exist_ok=True)
+    
+    # Рендеринг
+    print("🖼️ Рендеринг сцени...")
+    bpy.ops.render.render(write_still=True)
+    
+    print("✅ Рендеринг завершено!")
+    print(f"📁 Зображення збережено: renders/blender/test_scene.png")
 
 if __name__ == "__main__":
-    success = test_dry_run()
-    if success:
-        print("✓ Blender pipeline test passed!")
-        sys.exit(0)
-    else:
-        print("✗ Blender pipeline test failed!")
-        sys.exit(1)
+    main()
