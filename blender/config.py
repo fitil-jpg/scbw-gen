@@ -7,7 +7,9 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-import yaml
+# NOTE: Avoid importing PyYAML at module import time because Blender's
+# embedded Python may not have it installed. We will try to import it lazily
+# inside the loader to allow a graceful fallback to JSON when unavailable.
 
 LOG = logging.getLogger(__name__)
 
@@ -83,12 +85,37 @@ def load_pack_config(config_path: Path) -> PackConfig:
     if not config_path.exists():
         raise ConfigError(f"Configuration file not found: {config_path}")
     
+    suffix = config_path.suffix.lower()
     try:
-        with open(config_path, 'r', encoding='utf-8') as f:
-            if config_path.suffix.lower() == '.yaml' or config_path.suffix.lower() == '.yml':
-                data = yaml.safe_load(f)
+        if suffix in {'.yaml', '.yml'}:
+            try:
+                import yaml  # type: ignore
+            except Exception:
+                yaml = None  # type: ignore
+
+            if yaml is None:
+                # Attempt to fall back to a JSON twin next to the YAML file
+                fallback_path = config_path.with_suffix('.json')
+                if fallback_path.exists():
+                    LOG.info(
+                        "PyYAML is not available; falling back to JSON configuration at %s",
+                        fallback_path,
+                    )
+                    with open(fallback_path, 'r', encoding='utf-8') as f_json:
+                        data = json.load(f_json)
+                    # Point the config to the resolved path so downstream logs are accurate
+                    config_path = fallback_path
+                else:
+                    raise ConfigError(
+                        "pyyaml is required to load YAML configuration files. "
+                        f"Install pyyaml or provide a JSON configuration at '{fallback_path}'."
+                    )
             else:
-                data = json.load(f)
+                with open(config_path, 'r', encoding='utf-8') as f_yaml:
+                    data = yaml.safe_load(f_yaml)
+        else:
+            with open(config_path, 'r', encoding='utf-8') as f_json:
+                data = json.load(f_json)
     except Exception as e:
         raise ConfigError(f"Failed to parse configuration file: {e}")
     
