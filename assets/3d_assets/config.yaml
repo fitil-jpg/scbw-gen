@@ -1,0 +1,133 @@
+# Конфігурація 3D асетів з підтримкою інстансингу
+# Configuration for 3D assets with instancing support
+
+# Налаштування інстансингу
+instancing:
+  max_instances_per_model: 1000
+  enable_lod: true
+  lod_distances: [10.0, 50.0, 100.0]
+  culling_distance: 200.0
+  batch_size: 100
+  enable_frustum_culling: true
+  enable_occlusion_culling: false
+
+# Шляхи до асетів
+asset_paths:
+  models: "3d_assets/models"
+  textures: "3d_assets/textures"
+  materials: "3d_assets/materials"
+  animations: "3d_assets/animations"
+  instances: "3d_assets/instances"
+
+# Налаштування імпорту
+import_settings:
+  auto_scale: true
+  normalize_scale: 1.0
+  merge_materials: true
+  generate_tangents: true
+  optimize_meshes: true
+  preserve_hierarchy: true
+  import_animations: true
+  import_lights: true
+  import_cameras: true
+
+# Підтримувані формати
+supported_formats:
+  - gltf
+  - glb
+  - fbx
+  - obj
+  - usd
+  - usda
+  - usdc
+  - blend
+  - dae
+
+# Налаштування експорту USD
+usd_export:
+  use_instancing: true
+  merge_meshes: false
+  optimize_geometry: true
+  compress_textures: true
+  generate_previews: true
+  include_metadata: true
+
+# Налаштування матеріалів
+materials:
+  default_shader: "UsdPreviewSurface"
+  auto_generate_materials: true
+  texture_compression: "BC7"
+  mipmap_generation: true
+  sRGB_colorspace: true
+
+# Налаштування анімацій
+animations:
+  import_skeletal: true
+  import_morph_targets: true
+  import_vertex_animations: true
+  sample_rate: 30.0
+  bake_animations: false
+  optimize_curves: true
+
+# Налаштування освітлення
+lighting:
+  import_directional_lights: true
+  import_point_lights: true
+  import_spot_lights: true
+  import_area_lights: true
+  import_environment_maps: true
+  convert_to_usd_lights: true
+
+# Налаштування камер
+cameras:
+  import_cameras: true
+  convert_to_usd_cameras: true
+  preserve_camera_animations: true
+  default_fov: 60.0
+  default_near_clip: 0.1
+  default_far_clip: 1000.0
+
+# Налаштування колізій
+collision:
+  generate_collision_meshes: false
+  collision_mesh_simplification: 0.5
+  collision_mesh_format: "convex_hull"
+  export_physics_data: false
+
+# Налаштування LOD (Level of Detail)
+lod:
+  auto_generate: false
+  lod_levels: 3
+  reduction_percentages: [0.5, 0.25, 0.1]
+  distance_thresholds: [10.0, 50.0, 100.0]
+  preserve_materials: true
+  preserve_uvs: true
+
+# Налаштування кешування
+caching:
+  enable_disk_cache: true
+  cache_directory: "3d_assets/cache"
+  cache_compressed_models: true
+  cache_processed_textures: true
+  max_cache_size_mb: 1024
+  cleanup_old_cache: true
+  cache_retention_days: 30
+
+# Налаштування валідації
+validation:
+  check_file_integrity: true
+  validate_geometry: true
+  validate_materials: true
+  validate_textures: true
+  check_uv_coordinates: true
+  validate_animations: true
+  strict_mode: false
+
+# Налаштування логування
+logging:
+  log_import_progress: true
+  log_performance_metrics: true
+  log_memory_usage: true
+  log_warnings: true
+  log_errors: true
+  verbose_output: false

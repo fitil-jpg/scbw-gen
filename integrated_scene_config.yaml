@@ -1,0 +1,197 @@
+# Конфігурація інтегрованого генератора 3D сцен
+# Configuration for integrated 3D scene generator
+
+scene:
+  name: "StarCraft Battle Scene"
+  description: "3D сцена з будівлями та юнітами з підтримкою інстансингу"
+  
+  terrain:
+    type: "grassland"
+    size: 200.0
+    height_variation: 0.3
+    texture: "terrain/grass_01.png"
+    
+  lighting:
+    sun_angle: [45, 30]
+    sun_intensity: 1.2
+    ambient: 0.4
+    shadows: true
+    
+  camera:
+    position: [100, 80, 100]
+    target: [0, 0, 0]
+    fov: 60.0
+
+# Налаштування 3D асетів
+3d_assets:
+  import_models: true
+  use_instancing: true
+  
+  model_placement:
+    strategy: "mixed"  # random, grid, formation, mixed
+    density: 0.15
+    spacing: 8.0
+    
+  # Шляхи до асетів
+  asset_paths:
+    models: "3d_assets/models"
+    textures: "3d_assets/textures"
+    materials: "3d_assets/materials"
+    
+  # Налаштування імпорту
+  import_settings:
+    auto_scale: true
+    normalize_scale: 1.0
+    merge_materials: true
+    generate_tangents: true
+    optimize_meshes: true
+
+# Налаштування будівель
+buildings:
+  enabled: true
+  use_3d_models: true
+  instancing_enabled: true
+  
+  # Кількість та розміщення
+  count: 12
+  spawn_areas:
+    - [-80, -80, -20, -20]  # [x1, z1, x2, z2]
+    - [20, 20, 80, 80]
+    - [-40, 40, 40, 80]
+    - [-80, -40, -20, 20]
+  
+  # Моделі будівель
+  building_types:
+    - name: "castle"
+      model: "castle.gltf"
+      weight: 0.1  # ймовірність появи
+      scale_range: [1.0, 1.5]
+      
+    - name: "tower"
+      model: "tower.obj"
+      weight: 0.3
+      scale_range: [0.8, 1.2]
+      
+    - name: "barracks"
+      model: "barracks.fbx"
+      weight: 0.4
+      scale_range: [0.9, 1.1]
+      
+    - name: "wall"
+      model: "wall.obj"
+      weight: 0.2
+      scale_range: [0.7, 1.0]
+
+# Налаштування юнітів
+units:
+  enabled: true
+  use_3d_models: true
+  instancing_enabled: true
+  
+  # Кількість та розміщення
+  total_count: 60
+  spawn_areas:
+    - [-90, -90, -10, -10]
+    - [10, 10, 90, 90]
+    - [-50, 10, 50, 50]
+    - [-90, -50, -10, 10]
+  
+  # Формації
+  formations:
+    - type: "line"
+      count: 15
+      spacing: 3.0
+      
+    - type: "arc"
+      count: 20
+      radius: 15.0
+      
+    - type: "random"
+      count: 25
+      spacing: 2.0
+  
+  # Моделі юнітів
+  unit_types:
+    - name: "warrior"
+      model: "warrior.glb"
+      weight: 0.4
+      scale_range: [0.9, 1.1]
+      
+    - name: "archer"
+      model: "archer.glb"
+      weight: 0.3
+      scale_range: [0.8, 1.0]
+      
+    - name: "mage"
+      model: "mage.glb"
+      weight: 0.2
+      scale_range: [0.9, 1.1]
+      
+    - name: "knight"
+      model: "knight.glb"
+      weight: 0.1
+      scale_range: [1.0, 1.2]
+
+# Налаштування ефектів
+effects:
+  enabled: true
+  use_3d_models: false  # Ефекти зазвичай не потребують 3D моделей
+  
+  # Магічні ефекти
+  magic_effects:
+    - type: "magic_aura"
+      count: 5
+      positions: "random"
+      radius_range: [3.0, 8.0]
+      color: [0.8, 0.2, 1.0]
+      
+    - type: "healing_glow"
+      count: 3
+      positions: "near_units"
+      radius_range: [2.0, 5.0]
+      color: [0.2, 1.0, 0.3]
+
+# Налаштування інстансингу
+instancing:
+  max_instances_per_model: 1000
+  enable_lod: true
+  lod_distances: [15.0, 50.0, 100.0]
+  culling_distance: 150.0
+  batch_size: 50
+  enable_frustum_culling: true
+  enable_occlusion_culling: false
+
+# Налаштування експорту
+export:
+  format: "usda"
+  use_instancing: true
+  compress_textures: true
+  generate_previews: true
+  include_metadata: true
+  
+  # Додаткові файли
+  export_instances_config: true
+  export_asset_list: true
+  export_scene_info: true
+
+# Налаштування продуктивності
+performance:
+  enable_multithreading: true
+  max_threads: 4
+  memory_limit_mb: 2048
+  enable_caching: true
+  cache_directory: "cache/3d_assets"
+
+# Налаштування валідації
+validation:
+  check_asset_integrity: true
+  validate_instances: true
+  check_collisions: false
+  strict_mode: false
+
+# Налаштування логування
+logging:
+  log_import_progress: true
+  log_performance_metrics: true
+  log_memory_usage: true
+  verbose_output: true
