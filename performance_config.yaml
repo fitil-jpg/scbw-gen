@@ -1,0 +1,286 @@
+# Конфігурація розширеного менеджера продуктивності
+# Advanced Performance Manager Configuration
+
+# Налаштування GPU/CPU управління
+gpu_cpu_management:
+  enable_gpu: true
+  enable_cpu_optimization: true
+  max_gpu_memory_mb: 8192
+  max_cpu_threads: 16
+  gpu_memory_threshold: 0.85  # 85% використання пам'яті GPU
+  cpu_usage_threshold: 0.80   # 80% використання CPU
+  temperature_threshold: 80   # 80°C максимальна температура
+
+# Налаштування денойзу
+denoising:
+  enable_denoising: true
+  default_algorithm: "OPTIX"  # OPTIX, OIDN, NLM, BILATERAL
+  algorithms:
+    OPTIX:
+      strength: 1.0
+      input_passes: "RGB_ALBEDO_NORMAL"
+      enabled: true
+    OIDN:
+      strength: 1.0
+      quality: "HIGH"
+      enabled: true
+    NLM:
+      strength: 1.0
+      h: 10.0
+      template_window_size: 7
+      search_window_size: 21
+      enabled: true
+    BILATERAL:
+      strength: 1.0
+      sigma_color: 0.1
+      sigma_space: 10.0
+      enabled: true
+  cache_size: 100
+  auto_denoise_threshold: 0.3  # Автоматичний денойз при шумі > 30%
+
+# Налаштування тайлів
+tiling:
+  enable_tiling: true
+  base_tile_size: 256
+  overlap: 8
+  adaptive_tile_size: true
+  tile_size_presets:
+    low_memory: 64
+    balanced: 128
+    high_quality: 256
+    ultra: 512
+  priority_system: true
+  complexity_based_sizing: true
+
+# Налаштування адаптивного семплування
+adaptive_sampling:
+  enable_adaptive_sampling: true
+  base_samples: 128
+  min_samples: 32
+  max_samples: 1024
+  complexity_thresholds: [0.3, 0.6, 0.8]
+  sample_multipliers: [0.5, 1.0, 1.5, 2.0]
+  noise_adaptation: true
+  time_budget_adaptation: true
+  quality_presets:
+    draft:
+      base_samples: 32
+      max_samples: 128
+      adaptive_threshold: 0.05
+    balanced:
+      base_samples: 128
+      max_samples: 512
+      adaptive_threshold: 0.01
+    high:
+      base_samples: 256
+      max_samples: 1024
+      adaptive_threshold: 0.005
+    ultra:
+      base_samples: 512
+      max_samples: 2048
+      adaptive_threshold: 0.001
+
+# Налаштування LOD системи
+lod_system:
+  enable_lod: true
+  base_resolution: 512
+  max_lod_levels: 5
+  lod_levels: [1.0, 0.75, 0.5, 0.25, 0.125]
+  distance_thresholds: [50, 100, 200, 400]
+  complexity_adaptation: true
+  camera_speed_adaptation: true
+  downsampling_methods:
+    bilinear: true
+    nearest: false
+    gaussian: true
+  cache_size: 200
+  auto_lod_switching: true
+
+# Налаштування моніторингу продуктивності
+performance_monitoring:
+  enable_monitoring: true
+  update_interval: 1.0  # секунди
+  history_size: 300     # 5 хвилин при 1s інтервалі
+  metrics_to_track:
+    - cpu_usage
+    - memory_usage
+    - gpu_usage
+    - gpu_memory
+    - temperature
+    - render_time
+    - samples_per_second
+  alert_thresholds:
+    cpu_usage: 90
+    memory_usage: 85
+    gpu_usage: 95
+    gpu_memory: 90
+    temperature: 80
+  auto_optimization: true
+  recommendation_system: true
+
+# Налаштування кешування
+caching:
+  enable_caching: true
+  cache_sizes:
+    denoising: 100
+    lod: 200
+    sampling: 50
+    tiles: 1000
+  cache_eviction: "LRU"  # LRU, FIFO, LFU
+  memory_limit_mb: 2048
+  persistent_cache: false
+  cache_directory: "cache/performance"
+
+# Налаштування рендер двигунів
+render_engines:
+  cycles:
+    device_selection: "auto"  # auto, gpu, cpu
+    tile_size_auto: true
+    adaptive_sampling: true
+    denoising: true
+    caustics: true
+    light_bounces:
+      max: 12
+      diffuse: 4
+      glossy: 4
+      transmission: 12
+      volume: 2
+    quality_presets:
+      draft:
+        samples: 32
+        max_bounces: 4
+        tile_size: 64
+      balanced:
+        samples: 128
+        max_bounces: 8
+        tile_size: 128
+      high:
+        samples: 256
+        max_bounces: 12
+        tile_size: 256
+      ultra:
+        samples: 512
+        max_bounces: 16
+        tile_size: 512
+  
+  eevee:
+    taa_samples: 64
+    bloom: true
+    ssr: true
+    ssao: true
+    soft_shadows: true
+    shadow_quality: "HIGH"
+    volumetric_lights: true
+    quality_presets:
+      draft:
+        taa_samples: 16
+        bloom: false
+        ssr: false
+        ssao: false
+      balanced:
+        taa_samples: 32
+        bloom: true
+        ssr: true
+        ssao: true
+      high:
+        taa_samples: 64
+        bloom: true
+        ssr: true
+        ssao: true
+        volumetric_lights: true
+
+# Налаштування якості рендерингу
+quality_settings:
+  resolution_presets:
+    draft: [640, 360]
+    balanced: [1280, 720]
+    high: [1920, 1080]
+    ultra: [3840, 2160]
+  
+  output_formats:
+    png:
+      color_mode: "RGBA"
+      color_depth: "16"
+      compression: 0
+    jpeg:
+      color_mode: "RGB"
+      quality: 90
+    exr:
+      color_mode: "RGBA"
+      color_depth: "32"
+      codec: "ZIP"
+  
+  color_management:
+    view_transform: "Filmic"
+    look: "None"
+    exposure: 0.0
+    gamma: 1.0
+
+# Налаштування оптимізації
+optimization:
+  auto_optimize: true
+  target_fps: 30.0
+  quality_vs_performance: "balanced"  # performance, balanced, quality
+  memory_optimization: true
+  gpu_optimization: true
+  cpu_optimization: true
+  
+  optimization_strategies:
+    low_performance:
+      - reduce_samples
+      - enable_denoising
+      - enable_tiling
+      - enable_lod
+      - reduce_quality
+    balanced:
+      - adaptive_sampling
+      - smart_denoising
+      - optimized_tiling
+      - dynamic_lod
+    high_quality:
+      - increase_samples
+      - disable_denoising
+      - disable_tiling
+      - disable_lod
+      - max_quality
+
+# Налаштування логування
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  log_performance_metrics: true
+  log_optimization_decisions: true
+  log_file: "logs/performance_manager.log"
+  max_log_size_mb: 100
+  backup_count: 5
+
+# Налаштування тестування
+testing:
+  enable_benchmarks: true
+  benchmark_scenes:
+    - "simple_cube"
+    - "complex_scene"
+    - "terrain_scene"
+    - "character_scene"
+  performance_tests:
+    - "memory_usage"
+    - "render_time"
+    - "quality_metrics"
+    - "optimization_effectiveness"
+  test_output_directory: "test_results"
+
+# Налаштування інтеграції з Blender
+blender_integration:
+  auto_setup_scene: true
+  optimize_materials: true
+  optimize_geometry: true
+  optimize_lighting: true
+  scene_analysis: true
+  automatic_lod_setup: true
+  performance_overlay: true
+  
+  scene_optimizations:
+    - "decimate_geometry"
+    - "optimize_materials"
+    - "reduce_light_bounces"
+    - "simplify_shaders"
+    - "compress_textures"
