@@ -18,6 +18,9 @@ sys.path.append(str(current_dir))
 from enhanced_config_importer import EnhancedConfigImporter
 from enhanced_geometry_generator import EnhancedGeometryGenerator
 from enhanced_render_pipeline import EnhancedRenderPipeline
+from lighting_system import LightingSystem
+from hdri_environment import HDRIEnvironment
+from lighting_config import LightingConfigManager, LightingConfig
 
 # Налаштування логування
 logging.basicConfig(level=logging.INFO)
@@ -30,6 +33,9 @@ class IntegratedBlenderPipeline:
         self.config_importer = EnhancedConfigImporter(config_dir)
         self.geometry_generator = EnhancedGeometryGenerator()
         self.render_pipeline = EnhancedRenderPipeline(output_dir)
+        self.lighting_config_manager = LightingConfigManager("configs/lighting")
+        self.lighting_system = None
+        self.hdri_system = None
         self.current_shot = None
     
     def process_shot(self, shot_id: str, shot_config: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
@@ -55,7 +61,10 @@ class IntegratedBlenderPipeline:
             # 2. Генерація геометрії
             self.geometry_generator.generate_scene_from_config(shot_config)
             
-            # 3. Налаштування рендерингу
+            # 3. Налаштування освітлення
+            self._setup_lighting(shot_config)
+            
+            # 4. Налаштування рендерингу
             render_settings = shot_config.get("render_settings", {})
             self.render_pipeline.setup_render_engine(
                 render_settings.get("engine", "CYCLES"),
@@ -63,12 +72,12 @@ class IntegratedBlenderPipeline:
             )
             self.render_pipeline.setup_render_settings(render_settings)
             
-            # 4. Створення рендер пасів
+            # 5. Створення рендер пасів
             passes_config = shot_config.get("render_passes", [])
             if passes_config:
                 self.render_pipeline.create_render_passes(shot_id, passes_config)
             
-            # 5. Рендеринг
+            # 6. Рендеринг
             if shot_config.get("is_animation", False):
                 rendered_files = self.render_pipeline.render_animation(
                     shot_id,
@@ -81,7 +90,7 @@ class IntegratedBlenderPipeline:
                     shot_config.get("frame", 1)
                 )]
             
-            # 6. Створення маніфесту
+            # 7. Створення маніфесту
             manifest = self.render_pipeline.create_render_manifest(rendered_files, shot_id)
             
             result = {
@@ -104,6 +113,79 @@ class IntegratedBlenderPipeline:
                 "rendered_files": [],
                 "manifest": None
             }
+    
+    def _setup_lighting(self, shot_config: Dict[str, Any]) -> None:
+        """
+        Налаштовує систему освітлення для шоту
+        
+        Args:
+            shot_config: Конфігурація шоту
+        """
+        try:
+            # Отримання конфігурації освітлення
+            lighting_config_data = shot_config.get("lighting", {})
+            
+            # Якщо вказано пресет, завантажуємо його
+            if "preset" in lighting_config_data:
+                preset_name = lighting_config_data["preset"]
+                lighting_config = self.lighting_config_manager.get_preset(preset_name)
+                if not lighting_config:
+                    logger.warning(f"Пресет освітлення не знайдено: {preset_name}")
+                    lighting_config = lighting_config_data
+            else:
+                lighting_config = lighting_config_data
+            
+            # Ініціалізація системи освітлення
+            if not self.lighting_system:
+                self.lighting_system = LightingSystem({"output_dir": str(self.render_pipeline.output_dir)})
+            
+            if not self.hdri_system:
+                self.hdri_system = HDRIEnvironment({"output_dir": str(self.render_pipeline.output_dir)})
+            
+            # Налаштування HDRI
+            if "hdri" in lighting_config:
+                self.hdri_system.setup_hdri_environment(lighting_config["hdri"])
+            
+            # Налаштування лайтів
+            self.lighting_system.setup_lighting(lighting_config)
+            
+            # Додавання об'ємних ефектів
+            if "atmospheric" in lighting_config and lighting_config["atmospheric"]:
+                self.hdri_system.add_volumetric_effects(lighting_config["atmospheric"])
+            
+            # Анімація освітлення
+            if "animation" in lighting_config and lighting_config["animation"]:
+                self._animate_lighting(lighting_config["animation"])
+            
+            logger.info("Система освітлення налаштована")
+            
+        except Exception as e:
+            logger.error(f"Помилка налаштування освітлення: {e}")
+            raise
+    
+    def _animate_lighting(self, animation_config: Dict[str, Any]) -> None:
+        """
+        Анімує освітлення
+        
+        Args:
+            animation_config: Конфігурація анімації
+        """
+        try:
+            # Анімація лайтів
+            if "lights" in animation_config:
+                for light_name, light_animation in animation_config["lights"].items():
+                    if self.lighting_system:
+                        self.lighting_system.animate_light(light_name, light_animation)
+            
+            # Анімація HDRI
+            if "hdri" in animation_config and self.hdri_system:
+                self.hdri_system.animate_hdri_environment(animation_config["hdri"])
+            
+            logger.info("Анімація освітлення налаштована")
+            
+        except Exception as e:
+            logger.error(f"Помилка анімації освітлення: {e}")
+            raise
     
     def batch_process_shots(self, shots_config: List[Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
         """
@@ -283,6 +365,122 @@ class IntegratedBlenderPipeline:
                 errors.append("Відсутнє обертання камери")
         
         return errors
+    
+    def create_lighting_preset(self, preset_name: str, lighting_config: Dict[str, Any]) -> None:
+        """
+        Створює пресет освітлення
+        
+        Args:
+            preset_name: Назва пресету
+            lighting_config: Конфігурація освітлення
+        """
+        try:
+            # Конвертація в LightingConfig
+            config = self.lighting_config_manager._convert_to_lighting_config(lighting_config)
+            
+            # Валідація
+            errors = self.lighting_config_manager.validate_config(config)
+            if errors:
+                raise ValueError(f"Помилки валідації конфігурації: {errors}")
+            
+            # Створення пресету
+            self.lighting_config_manager.create_preset(preset_name, config)
+            
+            logger.info(f"Пресет освітлення створено: {preset_name}")
+            
+        except Exception as e:
+            logger.error(f"Помилка створення пресету освітлення: {e}")
+            raise
+    
+    def load_lighting_preset(self, preset_name: str) -> Dict[str, Any]:
+        """
+        Завантажує пресет освітлення
+        
+        Args:
+            preset_name: Назва пресету
+        
+        Returns:
+            Конфігурація пресету
+        """
+        return self.lighting_config_manager.get_preset(preset_name)
+    
+    def get_available_lighting_presets(self) -> List[str]:
+        """Повертає список доступних пресетів освітлення"""
+        return list(self.lighting_config_manager.presets.keys())
+    
+    def export_lighting_config(self, shot_id: str, filepath: str) -> None:
+        """
+        Експортує поточну конфігурацію освітлення
+        
+        Args:
+            shot_id: Ідентифікатор шоту
+            filepath: Шлях до файлу
+        """
+        try:
+            if self.lighting_system:
+                self.lighting_system.export_lighting_config(filepath)
+            
+            if self.hdri_system:
+                hdri_filepath = filepath.replace('.yaml', '_hdri.json')
+                self.hdri_system.export_hdri_config(hdri_filepath)
+            
+            logger.info(f"Конфігурація освітлення експортована: {filepath}")
+            
+        except Exception as e:
+            logger.error(f"Помилка експорту конфігурації освітлення: {e}")
+            raise
+    
+    def update_lighting(self, light_name: str, light_config: Dict[str, Any]) -> None:
+        """
+        Оновлює параметри лайта
+        
+        Args:
+            light_name: Назва лайта
+            light_config: Нова конфігурація лайта
+        """
+        try:
+            if self.lighting_system:
+                self.lighting_system.update_light(light_name, light_config)
+                logger.info(f"Лайт оновлено: {light_name}")
+            else:
+                logger.warning("Система освітлення не ініціалізована")
+                
+        except Exception as e:
+            logger.error(f"Помилка оновлення лайта: {e}")
+            raise
+    
+    def get_lighting_info(self) -> Dict[str, Any]:
+        """Повертає інформацію про поточне освітлення"""
+        try:
+            info = {
+                "lights": {},
+                "hdri": None,
+                "presets_available": self.get_available_lighting_presets()
+            }
+            
+            # Інформація про лайти
+            if self.lighting_system:
+                for name, light_obj in self.lighting_system.lights.items():
+                    info["lights"][name] = {
+                        "type": light_obj.data.type,
+                        "position": list(light_obj.location),
+                        "energy": light_obj.data.energy,
+                        "color": list(light_obj.data.color)
+                    }
+            
+            # Інформація про HDRI
+            if self.hdri_system and self.hdri_system.current_hdri:
+                info["hdri"] = self.hdri_system.current_hdri
+            
+            return info
+            
+        except Exception as e:
+            logger.error(f"Помилка отримання інформації про освітлення: {e}")
+            return {}
+    
+    def get_available_lighting_presets(self) -> List[str]:
+        """Повертає список доступних пресетів освітлення"""
+        return self.lighting_config_manager.get_available_presets()
 
 # Приклад використання
 if __name__ == "__main__":

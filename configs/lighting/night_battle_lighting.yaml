@@ -1,0 +1,88 @@
+# Конфігурація освітлення для нічної бойової сцени
+# Night Battle Scene Lighting Configuration
+
+hdri:
+  type: "preset"
+  preset_name: "night"
+  strength: 0.8
+
+main_lights:
+  - name: "Moon_Light"
+    type: "AREA"
+    position: [0, 0, 15]
+    energy: 2.0
+    color: [0.7, 0.8, 1.0]
+    size: 10.0
+    shape: "SQUARE"
+    shadow:
+      enabled: true
+      soft_size: 0.3
+
+additional_lights:
+  - name: "Ambient_Light"
+    type: "POINT"
+    position: [0, 0, 5]
+    energy: 0.5
+    color: [0.5, 0.6, 0.8]
+    shadow_soft_size: 0.25
+    shadow:
+      enabled: true
+      soft_size: 0.4
+
+  - name: "Fire_Light_1"
+    type: "POINT"
+    position: [2, 2, 1]
+    energy: 1.5
+    color: [1.0, 0.4, 0.1]
+    shadow_soft_size: 0.2
+    shadow:
+      enabled: true
+      soft_size: 0.3
+
+  - name: "Fire_Light_2"
+    type: "POINT"
+    position: [-2, -2, 1]
+    energy: 1.2
+    color: [1.0, 0.3, 0.05]
+    shadow_soft_size: 0.2
+    shadow:
+      enabled: true
+      soft_size: 0.3
+
+  - name: "Torch_Light"
+    type: "SPOT"
+    position: [0, 5, 3]
+    rotation: [0.2, 0, 0]
+    energy: 2.5
+    color: [1.0, 0.6, 0.2]
+    spot_size: 0.8
+    spot_blend: 0.3
+    shadow:
+      enabled: true
+      soft_size: 0.2
+
+atmospheric:
+  fog:
+    density: 0.1
+    anisotropy: 0.1
+  volume_absorption:
+    density: 0.02
+    color: [0.1, 0.1, 0.2]
+
+animation:
+  lights:
+    Fire_Light_1:
+      energy:
+        start: 1.5
+        end: 2.0
+        frames: [1, 30]
+    Fire_Light_2:
+      energy:
+        start: 1.2
+        end: 1.8
+        frames: [15, 45]
+    Torch_Light:
+      energy:
+        start: 2.5
+        end: 3.0
+        frames: [1, 60]

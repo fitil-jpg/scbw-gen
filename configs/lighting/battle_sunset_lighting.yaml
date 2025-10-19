@@ -1,0 +1,77 @@
+# Конфігурація освітлення для бойової сцени на заході сонця
+# Battle Scene Lighting Configuration - Sunset
+
+hdri:
+  type: "preset"
+  preset_name: "sunset"
+  strength: 1.2
+
+main_lights:
+  - name: "Battle_Sun"
+    type: "SUN"
+    position: [5, 5, 10]
+    rotation: [0.3, 0.3, -0.9]
+    energy: 3.0
+    color: [1.0, 0.6, 0.3]
+    angle: 0.5
+    shadow:
+      enabled: true
+      soft_size: 0.25
+
+additional_lights:
+  - name: "Warm_Fill"
+    type: "AREA"
+    position: [-3, -3, 8]
+    energy: 1.0
+    color: [1.0, 0.8, 0.6]
+    size: 5.0
+    shape: "SQUARE"
+    shadow:
+      enabled: true
+      soft_size: 0.5
+
+  - name: "Rim_Light"
+    type: "AREA"
+    position: [0, 5, 4]
+    energy: 2.0
+    color: [1.0, 0.9, 0.7]
+    size: 3.0
+    shape: "SQUARE"
+    shadow:
+      enabled: false
+
+  - name: "Ground_Bounce"
+    type: "AREA"
+    position: [0, 0, 1]
+    energy: 0.5
+    color: [0.8, 0.6, 0.4]
+    size: 10.0
+    shape: "SQUARE"
+    shadow:
+      enabled: false
+
+atmospheric:
+  fog:
+    density: 0.05
+    anisotropy: 0.0
+  atmospheric_perspective:
+    enabled: true
+    distance: 50.0
+    color: [0.8, 0.7, 0.6]
+
+animation:
+  lights:
+    Battle_Sun:
+      position:
+        start: [5, 5, 10]
+        end: [3, 3, 8]
+        frames: [1, 100]
+      energy:
+        start: 3.0
+        end: 1.5
+        frames: [1, 100]
+  hdri:
+    strength:
+      start: 1.2
+      end: 0.8
+      frames: [1, 100]
