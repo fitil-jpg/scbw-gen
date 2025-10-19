@@ -5,6 +5,7 @@
 
 import bpy
 import bmesh
+import math
 import mathutils
 from mathutils import Vector, Matrix
 from typing import Dict, Any, List, Optional, Tuple
@@ -421,33 +422,188 @@ class EnhancedGeometryGenerator:
             raise
     
     def setup_lighting(self, lighting_config: Dict[str, Any]) -> None:
-        """Налаштовує освітлення"""
+        """Налаштовує освітлення: кілька лайтів і world HDRI.
+
+        Підтримує:
+        - lighting.preset: "three_point" для швидкого сетапу кей/філ/рім
+        - lighting.lights: список лайтів із типами SUN/AREA/POINT/SPOT
+        - lighting.world_hdri: { path, strength, rotation }
+        - lighting.world_background: { color, strength } як fallback
+
+        Сумісність назад: підтримуються "sun_light" і "ambient_light".
+        """
         try:
-            # Сонячне світло
+            scene = bpy.context.scene
+
+            # Опційно почистити існуючі джерела світла (за замовчуванням True)
+            if lighting_config.get("clear_lights", True):
+                for obj in list(scene.objects):
+                    if obj.type == 'LIGHT':
+                        bpy.data.objects.remove(obj, do_unlink=True)
+
+            # Налаштування World та HDRI/бекграунду
+            self._setup_world_environment(lighting_config)
+
+            # Обробка пресетів освітлення
+            preset = lighting_config.get("preset")
+            if preset == "three_point":
+                self._create_three_point_lighting(lighting_config.get("preset_settings", {}))
+
+            # Явний список лайтів
+            for light_cfg in lighting_config.get("lights", []):
+                self._create_light_from_config(light_cfg)
+
+            # Сумісність назад з наявними ключами
             if "sun_light" in lighting_config:
-                sun_config = lighting_config["sun_light"]
-                bpy.ops.object.light_add(type='SUN')
-                sun = bpy.context.active_object
-                sun.name = "Sun"
-                sun.location = Vector(sun_config.get("position", [10, 10, 10]))
-                sun.data.energy = sun_config.get("energy", 3.0)
-                sun.data.color = sun_config.get("color", [1.0, 0.95, 0.8])
-            
-            # Амбієнтне світло
+                sun_cfg = lighting_config["sun_light"]
+                self._create_light_from_config({
+                    "type": "SUN",
+                    "name": sun_cfg.get("name", "Sun"),
+                    "position": sun_cfg.get("position", [10, 10, 10]),
+                    "energy": sun_cfg.get("energy", 3.0),
+                    "color": sun_cfg.get("color", [1.0, 0.95, 0.8])
+                })
+
             if "ambient_light" in lighting_config:
-                ambient_config = lighting_config["ambient_light"]
-                bpy.ops.object.light_add(type='AREA')
-                ambient = bpy.context.active_object
-                ambient.name = "Ambient"
-                ambient.data.energy = ambient_config.get("energy", 0.3)
-                ambient.data.color = ambient_config.get("color", [0.5, 0.7, 1.0])
-                ambient.data.size = 10.0
-            
+                amb_cfg = lighting_config["ambient_light"]
+                self._create_light_from_config({
+                    "type": "AREA",
+                    "name": amb_cfg.get("name", "Ambient"),
+                    "position": amb_cfg.get("position", [0, 0, 5]),
+                    "energy": amb_cfg.get("energy", 0.3),
+                    "color": amb_cfg.get("color", [0.5, 0.7, 1.0]),
+                    "size": amb_cfg.get("size", 10.0)
+                })
+
             logger.info("Освітлення налаштовано")
-            
+
         except Exception as e:
             logger.error(f"Помилка налаштування освітлення: {e}")
             raise
+
+    def _setup_world_environment(self, lighting_config: Dict[str, Any]) -> None:
+        """Створює вузли World для HDRI або бекграунду."""
+        scene = bpy.context.scene
+        world = scene.world or bpy.data.worlds.new("World")
+        scene.world = world
+        world.use_nodes = True
+        nodes = world.node_tree.nodes
+        links = world.node_tree.links
+
+        # Почистити існуючі вузли, щоб уникнути дублювання
+        nodes.clear()
+
+        # Спроба налаштувати HDRI
+        hdri_cfg = lighting_config.get("world_hdri")
+        if hdri_cfg and hdri_cfg.get("path"):
+            try:
+                env_tex = nodes.new(type='ShaderNodeTexEnvironment')
+                env_tex.image = bpy.data.images.load(hdri_cfg["path"], check_existing=True)
+
+                mapping = nodes.new(type='ShaderNodeMapping')
+                texcoord = nodes.new(type='ShaderNodeTexCoord')
+                background = nodes.new(type='ShaderNodeBackground')
+                world_output = nodes.new(type='ShaderNodeOutputWorld')
+
+                # Strength
+                background.inputs['Strength'].default_value = float(hdri_cfg.get("strength", 1.0))
+
+                # Rotation (в градусах)
+                rotation = hdri_cfg.get("rotation", [0.0, 0.0, 0.0])
+                mapping.inputs['Rotation'].default_value[0] = math.radians(rotation[0])
+                mapping.inputs['Rotation'].default_value[1] = math.radians(rotation[1])
+                mapping.inputs['Rotation'].default_value[2] = math.radians(rotation[2])
+
+                # Лінки
+                links.new(texcoord.outputs['Generated'], mapping.inputs['Vector'])
+                links.new(mapping.outputs['Vector'], env_tex.inputs['Vector'])
+                links.new(env_tex.outputs['Color'], background.inputs['Color'])
+                links.new(background.outputs['Background'], world_output.inputs['Surface'])
+
+                return
+            except Exception as e:
+                logger.warning(f"Не вдалося завантажити HDRI: {e}. Використовую бекграунд колір.")
+
+        # Fallback: суцільний бекграунд
+        bg_cfg = lighting_config.get("world_background", {})
+        background = nodes.new(type='ShaderNodeBackground')
+        world_output = nodes.new(type='ShaderNodeOutputWorld')
+        color = bg_cfg.get("color", [0.1, 0.15, 0.2, 1.0])
+        strength = float(bg_cfg.get("strength", 0.3))
+        background.inputs['Color'].default_value = (*color[:3], color[3] if len(color) > 3 else 1.0)
+        background.inputs['Strength'].default_value = strength
+        links.new(background.outputs['Background'], world_output.inputs['Surface'])
+
+    def _create_three_point_lighting(self, preset_settings: Dict[str, Any]) -> None:
+        """Створює базовий three-point lighting сетап (key, fill, rim)."""
+        # Key
+        self._create_light_from_config({
+            "type": "AREA",
+            "name": "Key_Light",
+            "position": preset_settings.get("key_position", [5.0, -5.0, 5.0]),
+            "energy": preset_settings.get("key_energy", 800.0),
+            "color": preset_settings.get("key_color", [1.0, 1.0, 1.0]),
+            "size": preset_settings.get("key_size", 3.0)
+        })
+
+        # Fill
+        self._create_light_from_config({
+            "type": "AREA",
+            "name": "Fill_Light",
+            "position": preset_settings.get("fill_position", [-5.0, -2.5, 3.0]),
+            "energy": preset_settings.get("fill_energy", 300.0),
+            "color": preset_settings.get("fill_color", [0.9, 0.95, 1.0]),
+            "size": preset_settings.get("fill_size", 4.0)
+        })
+
+        # Rim
+        self._create_light_from_config({
+            "type": "AREA",
+            "name": "Rim_Light",
+            "position": preset_settings.get("rim_position", [0.0, 5.0, 3.0]),
+            "energy": preset_settings.get("rim_energy", 500.0),
+            "color": preset_settings.get("rim_color", [1.0, 0.95, 0.9]),
+            "size": preset_settings.get("rim_size", 2.0)
+        })
+
+    def _create_light_from_config(self, light_cfg: Dict[str, Any]) -> None:
+        """Створює лайт певного типу на основі конфігурації."""
+        light_type = light_cfg.get("type", "SUN").upper()
+        name = light_cfg.get("name", f"Light_{light_type}")
+        position = Vector(light_cfg.get("position", [0.0, 0.0, 5.0]))
+        rotation = light_cfg.get("rotation")  # очікуємо градуси [x, y, z]
+        energy = float(light_cfg.get("energy", 10.0))
+        color = light_cfg.get("color", [1.0, 1.0, 1.0])
+
+        bpy.ops.object.light_add(type=light_type)
+        light_obj = bpy.context.active_object
+        light_obj.name = name
+        light_obj.location = position
+
+        if rotation is not None:
+            light_obj.rotation_euler = [math.radians(r) for r in rotation]
+
+        data = light_obj.data
+        data.energy = energy
+        data.color = color
+
+        # Додаткові параметри для різних типів
+        if light_type == 'AREA':
+            size = float(light_cfg.get("size", 1.0))
+            data.size = size
+            shape = light_cfg.get("shape")
+            if shape in {"SQUARE", "RECTANGLE", "DISK", "ELLIPSE"}:
+                data.shape = shape
+            size_x = light_cfg.get("size_x")
+            size_y = light_cfg.get("size_y")
+            if size_x:
+                data.size_x = float(size_x)
+            if size_y:
+                data.size_y = float(size_y)
+        elif light_type == 'SPOT':
+            data.spot_size = float(light_cfg.get("spot_size", math.radians(45.0)))
+            data.spot_blend = float(light_cfg.get("spot_blend", 0.15))
+        # POINT і SUN не потребують додаткових налаштувань за замовчуванням
     
     def generate_scene_from_config(self, shot_config: Dict[str, Any]) -> None:
         """Генерує всю сцену на основі конфігурації шоту"""

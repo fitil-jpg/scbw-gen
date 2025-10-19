@@ -168,15 +168,42 @@ class EnhancedConfigImporter:
     def _get_lighting_config(self, shot_id: str) -> Dict[str, Any]:
         """Отримує конфігурацію освітлення для шоту"""
         return {
+            # Новий формат: world HDRI та список лайтів
+            "world_hdri": {
+                # Вкажіть шлях до HDRI (EXR/HDR). Якщо None або відсутній — буде використано world_background
+                "path": None,
+                "strength": 1.0,
+                # Обертання у градусах XYZ
+                "rotation": [0.0, 0.0, 0.0]
+            },
+            "world_background": {
+                # Бекграунд колір як fallback (RGBA або RGB)
+                "color": [0.1, 0.15, 0.2, 1.0],
+                "strength": 0.3
+            },
+            # Пресет базового освітлення може бути: "three_point" або None
+            "preset": "three_point",
+            "preset_settings": {},
+            # Явні лайт-джерела (можна доповнити або перекрити пресет)
+            "lights": [
+                {"type": "SUN", "name": "Sun", "position": [10, 10, 15], "energy": 3.0, "color": [1.0, 0.95, 0.8]},
+                {"type": "AREA", "name": "Fill", "position": [-5, -5, 8], "energy": 300.0, "size": 4.0, "color": [0.9, 0.95, 1.0]},
+                {"type": "AREA", "name": "Rim", "position": [0, 8, 5], "energy": 500.0, "size": 2.0, "color": [1.0, 0.95, 0.9]}
+            ],
+            # Зворотна сумісність зі старими ключами (опціонально)
             "sun_light": {
                 "position": [10, 10, 10],
                 "energy": 3.0,
                 "color": [1.0, 0.95, 0.8]
             },
             "ambient_light": {
+                "position": [0, 0, 5],
                 "energy": 0.3,
+                "size": 10.0,
                 "color": [0.5, 0.7, 1.0]
-            }
+            },
+            # Поведінка очищення
+            "clear_lights": True
         }
     
     def _get_render_settings(self, shot_id: str) -> Dict[str, Any]:
