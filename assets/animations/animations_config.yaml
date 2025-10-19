@@ -1,0 +1,388 @@
+# Конфігурація анімацій для SCBW pipeline
+# Підтримує різні типи анімації та рендерингу послідовностей
+
+# Загальні налаштування анімації
+global_settings:
+  fps: 24
+  frame_start: 1
+  frame_end: 100
+  interpolation: "BEZIER"
+  render_engine: "CYCLES"
+  output_format: "PNG"
+  resolution: [1920, 1080]
+
+# Шаблони анімацій
+animation_templates:
+  battle_sequence:
+    name: "Battle Sequence"
+    description: "Анімація битви з рухом одиниць та камери"
+    duration: 100
+    camera:
+      type: "circular"
+      radius: 20.0
+      height: 8.0
+      follow_curve: true
+    units:
+      count: 5
+      movement: "forward_advance"
+      keyframes:
+        - frame: 1
+          location: [0, -5, 0.5]
+        - frame: 50
+          location: [0, 0, 0.5]
+        - frame: 100
+          location: [0, 5, 0.5]
+    lighting:
+      sun_light:
+        position: [10, 10, 15]
+        energy: 3.0
+        color: [1.0, 0.95, 0.8]
+    render_settings:
+      engine: "CYCLES"
+      samples: 128
+      denoising: true
+      resolution: [1920, 1080]
+
+  building_construction:
+    name: "Building Construction"
+    description: "Анімація будівництва споруди з масштабуванням"
+    duration: 90
+    camera:
+      type: "helical"
+      radius: 12.0
+      height_start: 2.0
+      height_end: 6.0
+      turns: 1
+      follow_curve: true
+    building:
+      type: "CommandCenter"
+      scale_animation: true
+      keyframes:
+        - frame: 1
+          scale: [1, 1, 0.1]
+        - frame: 30
+          scale: [1, 1, 0.3]
+        - frame: 60
+          scale: [1, 1, 0.7]
+        - frame: 90
+          scale: [1, 1, 1.0]
+    lighting:
+      sun_light:
+        position: [5, 5, 10]
+        energy: 2.5
+        color: [1.0, 0.95, 0.8]
+    render_settings:
+      engine: "CYCLES"
+      samples: 256
+      denoising: true
+      resolution: [1920, 1080]
+
+  cinematic_shot:
+    name: "Cinematic Shot"
+    description: "Кінематографічна анімація камери зі складним шляхом"
+    duration: 120
+    camera:
+      type: "custom_path"
+      points:
+        - [-15, -20, 8]
+        - [-10, -15, 12]
+        - [0, -10, 15]
+        - [10, -5, 12]
+        - [15, 0, 8]
+      follow_curve: true
+      fov_animation: true
+      fov_keyframes:
+        - frame: 1
+          fov: 50
+        - frame: 30
+          fov: 35
+        - frame: 60
+          fov: 25
+        - frame: 90
+          fov: 35
+        - frame: 120
+          fov: 50
+    lighting:
+      sun_light:
+        position: [10, 10, 20]
+        energy: 4.0
+        color: [1.0, 0.95, 0.8]
+      fill_light:
+        type: "AREA"
+        position: [0, 0, 5]
+        energy: 1.0
+        color: [0.9, 0.9, 1.0]
+    render_settings:
+      engine: "CYCLES"
+      samples: 512
+      denoising: true
+      resolution: [1920, 1080]
+
+  unit_movement:
+    name: "Unit Movement"
+    description: "Анімація руху одиниць по території"
+    duration: 60
+    camera:
+      type: "static"
+      position: [0, -15, 8]
+      rotation: [60, 0, 0]
+    units:
+      movement_pattern: "patrol"
+      keyframes:
+        - frame: 1
+          location: [0, 0, 0.5]
+        - frame: 15
+          location: [5, 0, 0.5]
+        - frame: 30
+          location: [5, 5, 0.5]
+        - frame: 45
+          location: [0, 5, 0.5]
+        - frame: 60
+          location: [0, 0, 0.5]
+    render_settings:
+      engine: "CYCLES"
+      samples: 64
+      denoising: true
+      resolution: [1280, 720]
+
+  camera_zoom:
+    name: "Camera Zoom"
+    description: "Анімація зуму камери на об'єкт"
+    duration: 80
+    camera:
+      type: "zoom"
+      start_position: [0, -20, 10]
+      end_position: [0, -5, 3]
+      start_rotation: [45, 0, 0]
+      end_rotation: [60, 0, 0]
+      fov_animation: true
+      fov_keyframes:
+        - frame: 1
+          fov: 50
+        - frame: 40
+          fov: 25
+        - frame: 80
+          fov: 15
+    render_settings:
+      engine: "CYCLES"
+      samples: 128
+      denoising: true
+      resolution: [1920, 1080]
+
+# Конфігурації шотів
+shots:
+  battle_001:
+    template: "battle_sequence"
+    shot_id: "battle_001"
+    custom_settings:
+      units:
+        count: 8
+        formation: "line"
+      camera:
+        radius: 25.0
+        height: 10.0
+    render_settings:
+      samples: 256
+      resolution: [2560, 1440]
+
+  construction_001:
+    template: "building_construction"
+    shot_id: "construction_001"
+    custom_settings:
+      building:
+        type: "Factory"
+        scale: [2, 2, 1.5]
+      camera:
+        radius: 15.0
+        height_start: 1.0
+        height_end: 8.0
+    render_settings:
+      samples: 512
+      resolution: [1920, 1080]
+
+  cinematic_001:
+    template: "cinematic_shot"
+    shot_id: "cinematic_001"
+    custom_settings:
+      camera:
+        points:
+          - [-20, -25, 10]
+          - [-15, -20, 15]
+          - [0, -15, 20]
+          - [15, -10, 15]
+          - [20, -5, 10]
+    render_settings:
+      samples: 1024
+      resolution: [3840, 2160]
+
+# Налаштування рендерингу для різних якостей
+render_qualities:
+  preview:
+    samples: 32
+    resolution: [640, 360]
+    denoising: false
+    output_format: "JPEG"
+  
+  low:
+    samples: 64
+    resolution: [1280, 720]
+    denoising: true
+    output_format: "PNG"
+  
+  medium:
+    samples: 128
+    resolution: [1920, 1080]
+    denoising: true
+    output_format: "PNG"
+  
+  high:
+    samples: 256
+    resolution: [1920, 1080]
+    denoising: true
+    output_format: "PNG"
+  
+  ultra:
+    samples: 512
+    resolution: [2560, 1440]
+    denoising: true
+    output_format: "PNG"
+  
+  cinematic:
+    samples: 1024
+    resolution: [3840, 2160]
+    denoising: true
+    output_format: "PNG"
+
+# Налаштування експорту
+export_settings:
+  formats:
+    - "blend"
+    - "fbx"
+    - "obj"
+    - "usd"
+  
+  output_directory: "renders/blender/exports"
+  
+  compression:
+    blend: "gzip"
+    fbx: "binary"
+    obj: "none"
+    usd: "usdz"
+
+# Налаштування композитингу
+compositing:
+  enable: true
+  passes:
+    - "beauty"
+    - "depth"
+    - "normal"
+    - "diffuse"
+    - "glossy"
+    - "emission"
+    - "ambient_occlusion"
+  
+  output_format: "OPEN_EXR"
+  color_depth: "16"
+  codec: "ZIP"
+
+# Налаштування анімації об'єктів
+object_animation:
+  interpolation_types:
+    - "BEZIER"
+    - "LINEAR"
+    - "CONSTANT"
+    - "BACK"
+    - "BOUNCE"
+    - "CIRCULAR"
+    - "CUBIC"
+    - "ELASTIC"
+    - "EXPO"
+    - "QUART"
+    - "QUINT"
+    - "SINE"
+  
+  default_interpolation: "BEZIER"
+  
+  easing_types:
+    - "AUTO"
+    - "EASE_IN"
+    - "EASE_OUT"
+    - "EASE_IN_OUT"
+
+# Налаштування камери
+camera_settings:
+  default_fov: 50
+  min_fov: 10
+  max_fov: 180
+  
+  movement_smoothing: true
+  rotation_smoothing: true
+  
+  auto_focus: true
+  focus_distance: 10.0
+  
+  depth_of_field:
+    enable: false
+    fstop: 2.8
+    focus_distance: 10.0
+
+# Налаштування освітлення
+lighting_settings:
+  sun_light:
+    default_energy: 3.0
+    default_color: [1.0, 0.95, 0.8]
+    shadow_soft_size: 0.25
+  
+  area_light:
+    default_energy: 1.0
+    default_color: [1.0, 1.0, 1.0]
+    size: 1.0
+  
+  point_light:
+    default_energy: 100.0
+    default_color: [1.0, 1.0, 1.0]
+    falloff: "INVERSE_SQUARE"
+
+# Налаштування матеріалів
+material_settings:
+  default_metallic: 0.0
+  default_roughness: 0.5
+  default_specular: 0.5
+  
+  textures:
+    resolution: 1024
+    format: "PNG"
+    compression: 0
+
+# Налаштування анімації частинок
+particle_animation:
+  enable: false
+  count: 1000
+  lifetime: 100
+  velocity: 1.0
+  
+  effects:
+    - "smoke"
+    - "fire"
+    - "explosion"
+    - "dust"
+
+# Налаштування пост-обробки
+post_processing:
+  color_grading:
+    enable: true
+    exposure: 0.0
+    contrast: 1.0
+    saturation: 1.0
+    hue: 0.0
+  
+  bloom:
+    enable: true
+    threshold: 1.0
+    intensity: 0.1
+    radius: 6.5
+  
+  motion_blur:
+    enable: false
+    shutter: 0.5
+    samples: 16
