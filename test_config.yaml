@@ -1,0 +1,15 @@
+buildings:
+  Test_Building:
+    color:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 1.0
+    position:
+    - 0
+    - 0
+    - 1
+    size: 1.0
+scene:
+  name: Test Scene
+  version: '1.0'

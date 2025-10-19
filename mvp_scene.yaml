@@ -1,0 +1,58 @@
+# MVP Scene Configuration
+# Компактна конфігурація сцени для MVP
+
+scene:
+  name: "MVP StarCraft Scene"
+  version: "1.0"
+  description: "Мінімальна сцена StarCraft для MVP"
+
+# Будівлі
+buildings:
+  Terran_Building_1:
+    position: [-4, 2, 1]
+    size: 1.5
+    color: [0.2, 0.4, 0.8, 1.0]  # Синій
+  Terran_Building_2:
+    position: [-2, 3, 1]
+    size: 1.5
+    color: [0.2, 0.4, 0.8, 1.0]
+  Zerg_Building_1:
+    position: [4, -2, 1]
+    size: 1.2
+    color: [0.6, 0.2, 0.6, 1.0]  # Фіолетовий
+  Zerg_Building_2:
+    position: [6, -1, 1]
+    size: 1.2
+    color: [0.6, 0.2, 0.6, 1.0]
+
+# Юніти
+units:
+  Terran_Unit_1:
+    position: [-3, 1, 0.5]
+    size: 0.3
+    color: [0.3, 0.5, 0.9, 1.0]  # Синій
+  Terran_Unit_2:
+    position: [-2, 2, 0.5]
+    size: 0.3
+    color: [0.3, 0.5, 0.9, 1.0]
+  Zerg_Unit_1:
+    position: [3, -1, 0.5]
+    size: 0.25
+    color: [0.7, 0.3, 0.7, 1.0]  # Фіолетовий
+  Zerg_Unit_2:
+    position: [5, -2, 0.5]
+    size: 0.25
+    color: [0.7, 0.3, 0.7, 1.0]
+
+# Ефекти
+effects:
+  Portal:
+    position: [0, 0, 1]
+    radius: 1.5
+    color: [0.5, 0.8, 1.0, 1.0]  # Синій емісія
+
+# Налаштування рендерингу
+render:
+  resolution: [1280, 720]
+  samples: 256
+  output_path: "renders/blender/mvp_scene.png"
