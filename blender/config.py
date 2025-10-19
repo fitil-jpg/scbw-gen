@@ -7,7 +7,40 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-import yaml
+import sys
+
+try:
+    import yaml  # type: ignore
+except ModuleNotFoundError:
+    # Attempt to locate user site-packages (common when running under Blender)
+    try:
+        import site  # type: ignore
+
+        user_sites = site.getusersitepackages()  # type: ignore[attr-defined]
+        if isinstance(user_sites, str):
+            candidate_paths: List[str] = [user_sites]
+        else:
+            candidate_paths = list(user_sites)
+    except Exception:
+        py_ver = f"{sys.version_info.major}.{sys.version_info.minor}"
+        candidate_paths = [
+            str(Path.home() / ".local" / "lib" / f"python{py_ver}" / "site-packages"),
+            str(
+                Path.home()
+                / "Library"
+                / "Python"
+                / py_ver
+                / "lib"
+                / "python"
+                / "site-packages"
+            ),
+        ]
+
+    for path in candidate_paths:
+        if path and Path(path).is_dir() and path not in sys.path:
+            sys.path.append(path)
+
+    import yaml  # type: ignore
 
 LOG = logging.getLogger(__name__)
 

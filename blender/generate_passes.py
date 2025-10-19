@@ -8,6 +8,48 @@ import sys
 from pathlib import Path
 from typing import Iterable, List, Optional, Sequence
 
+
+def _add_user_site_packages_to_sys_path() -> None:
+    """Ensure user's site-packages is importable (needed for PyYAML under Blender).
+
+    Blender's embedded Python sometimes excludes user site-packages. When PyYAML is
+    installed with "--user" via Blender's interpreter, it may land outside of
+    sys.path and cause "ModuleNotFoundError: yaml". This function appends common
+    user site-packages locations to sys.path if they exist.
+    """
+    try:
+        import site  # noqa: WPS433  (module import inside function by design)
+
+        user_sites = site.getusersitepackages()  # type: ignore[attr-defined]
+        candidate_paths: List[str]
+        if isinstance(user_sites, str):
+            candidate_paths = [user_sites]
+        else:
+            candidate_paths = list(user_sites)
+    except Exception:
+        # Fall back to typical per-platform locations
+        py_ver = f"{sys.version_info.major}.{sys.version_info.minor}"
+        candidate_paths = [
+            str(Path.home() / ".local" / "lib" / f"python{py_ver}" / "site-packages"),  # Linux
+            str(
+                Path.home()
+                / "Library"
+                / "Python"
+                / py_ver
+                / "lib"
+                / "python"
+                / "site-packages"
+            ),  # macOS
+        ]
+
+    for path in candidate_paths:
+        if path and Path(path).is_dir() and path not in sys.path:
+            sys.path.append(path)
+
+
+# Make sure user-level site-packages (e.g., PyYAML) are importable under Blender
+_add_user_site_packages_to_sys_path()
+
 if __package__ in {None, ""}:  # pragma: no cover - executed when run as a script
     sys.path.append(str(Path(__file__).resolve().parent.parent))
 
