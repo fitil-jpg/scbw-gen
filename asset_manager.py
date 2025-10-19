@@ -86,7 +86,7 @@ class AssetManager:
         # Налаштування
         self.supported_image_formats = {'.png', '.jpg', '.jpeg', '.tga', '.bmp', '.tiff', '.exr'}
         self.supported_audio_formats = {'.wav', '.mp3', '.ogg', '.flac'}
-        self.supported_model_formats = {'.obj', '.fbx', '.dae', '.blend', '.usd', '.usda', '.usdc'}
+        self.supported_model_formats = {'.obj', '.fbx', '.dae', '.blend', '.usd', '.usda', '.usdc', '.gltf', '.glb'}
         self.supported_font_formats = {'.ttf', '.otf', '.woff', '.woff2'}
         
         # Ініціалізувати категорії
@@ -112,6 +112,15 @@ class AssetManager:
             path=self.assets_root / "models",
             asset_types={AssetType.MODEL},
             description="3D моделі та меші",
+            allowed_extensions=self.supported_model_formats
+        )
+        
+        # 3D моделі з інстансингом
+        self.categories["3d_models"] = AssetCategory(
+            name="3d_models",
+            path=self.assets_root / "3d_assets" / "models",
+            asset_types={AssetType.MODEL},
+            description="3D моделі з підтримкою інстансингу",
             allowed_extensions=self.supported_model_formats
         )
         
