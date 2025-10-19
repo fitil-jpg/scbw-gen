@@ -1,0 +1,44 @@
+# Приклад конфігурації для пакетного рендерингу
+- shot_id: "battle_scene_001"
+  template: "battle_scene_template"
+  custom_params:
+    camera:
+      position: [0, -20, 10]
+      rotation: [60, 0, 0]
+    render_settings:
+      engine: "CYCLES"
+      samples: 128
+      resolution: [1920, 1080]
+
+- shot_id: "battle_scene_002"
+  template: "battle_scene_template"
+  custom_params:
+    camera:
+      position: [10, -15, 8]
+      rotation: [45, 30, 0]
+    render_settings:
+      engine: "CYCLES"
+      samples: 256
+      resolution: [1920, 1080]
+
+- shot_id: "battle_scene_003"
+  template: "battle_scene_template"
+  custom_params:
+    camera:
+      position: [-10, -15, 8]
+      rotation: [45, -30, 0]
+    render_settings:
+      engine: "BLENDER_EEVEE"
+      taa_render_samples: 64
+      resolution: [1920, 1080]
+
+- shot_id: "animation_test"
+  template: "battle_scene_template"
+  custom_params:
+    is_animation: true
+    start_frame: 1
+    end_frame: 30
+    render_settings:
+      engine: "CYCLES"
+      samples: 64
+      resolution: [1280, 720]
