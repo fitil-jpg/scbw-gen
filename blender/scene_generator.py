@@ -205,7 +205,6 @@ class StarCraftSceneGenerator:
             output = nodes.new(type='ShaderNodeOutputMaterial')
             output.location = (300, 0)
             
-            # BUGFIX: link the unit material node tree, not terrain
             unit_mat.node_tree.links.new(bsdf.outputs['BSDF'], output.inputs['Surface'])
             
             # Set unit color from palette

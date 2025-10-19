@@ -1,0 +1,102 @@
+# Шаблон бойової сцени
+shot_id: "battle_scene_template"
+terrain:
+  type: "plane"
+  size: [50, 50]
+  materials:
+    - name: "Ground"
+      color: [0.3, 0.4, 0.2]
+      roughness: 0.8
+
+buildings:
+  - name: "Command Center"
+    type: "cube"
+    position: [0, 0, 0]
+    scale: [3, 3, 2]
+    materials:
+      - name: "Metal"
+        color: [0.8, 0.8, 0.9]
+        metallic: 0.8
+        roughness: 0.2
+  - name: "Barracks"
+    type: "cube"
+    position: [8, 0, 0]
+    scale: [2, 2, 1.5]
+    materials:
+      - name: "Concrete"
+        color: [0.6, 0.6, 0.6]
+        metallic: 0.1
+        roughness: 0.7
+
+units:
+  - name: "Marine Squad"
+    type: "soldier"
+    position: [5, 0, 0]
+    scale: [1, 1, 1]
+    materials:
+      - name: "Armor"
+        color: [0.2, 0.2, 0.3]
+        metallic: 0.1
+        roughness: 0.8
+  - name: "Tank"
+    type: "vehicle"
+    position: [12, 0, 0]
+    scale: [1.5, 1.5, 1]
+    materials:
+      - name: "Military Paint"
+        color: [0.4, 0.4, 0.3]
+        metallic: 0.2
+        roughness: 0.6
+
+effects:
+  - name: "Explosion"
+    type: "explosion"
+    position: [15, 0, 0]
+    scale: [2, 2, 2]
+    animations:
+      - type: "scale"
+        duration: 2.0
+        keyframes:
+          - frame: 0.0
+            scale: [0.1, 0.1, 0.1]
+          - frame: 0.5
+            scale: [2, 2, 2]
+          - frame: 1.0
+            scale: [0.1, 0.1, 0.1]
+
+camera:
+  position: [0, -20, 10]
+  rotation: [60, 0, 0]
+  focal_length: 50
+  sensor_size: 36
+
+lighting:
+  sun_light:
+    position: [10, 10, 15]
+    energy: 3.0
+    color: [1.0, 0.95, 0.8]
+  ambient_light:
+    energy: 0.3
+    color: [0.5, 0.7, 1.0]
+
+render_settings:
+  engine: "CYCLES"
+  samples: 128
+  resolution: [1920, 1080]
+  output_format: "PNG"
+  denoising: true
+  max_bounces: 12
+  diffuse_bounces: 4
+  glossy_bounces: 4
+
+render_passes:
+  - type: "beauty"
+    name: "beauty"
+  - type: "depth"
+    name: "depth"
+  - type: "normal"
+    name: "normal"
+  - type: "diffuse"
+    name: "diffuse"
+  - type: "glossy"
+    name: "glossy"

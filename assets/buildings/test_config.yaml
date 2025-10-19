@@ -1,0 +1,11 @@
+buildings:
+- name: Test Building
+  position:
+  - 0
+  - 0
+  - 0
+  scale:
+  - 1
+  - 1
+  - 1
+  type: cube
