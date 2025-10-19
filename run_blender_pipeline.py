@@ -26,6 +26,7 @@ def main():
     parser.add_argument("--output", type=Path, default=Path("renders/blender"))
     parser.add_argument("--dry-run", action="store_true", help="Dry run mode")
     parser.add_argument("--verbose", action="store_true", help="Verbose logging")
+    parser.add_argument("--engine", choices=["cycles", "eevee"], default="cycles")
     
     # Parse arguments from sys.argv, skipping the first one (script name)
     args = parser.parse_args(sys.argv[1:])
@@ -52,7 +53,7 @@ def main():
     
     # Initialize components
     scene_generator = StarCraftSceneGenerator(config)
-    renderer = MultiPassRenderer(args.output)
+    renderer = MultiPassRenderer(args.output, engine=('BLENDER_EEVEE' if args.engine.lower() == 'eevee' else 'CYCLES'))
     packager = EXRPackager(args.output)
     
     for shot in selected_shots:
