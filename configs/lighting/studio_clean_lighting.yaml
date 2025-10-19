@@ -1,0 +1,57 @@
+# Конфігурація освітлення для чистої студійної сцени
+# Clean Studio Lighting Configuration
+
+hdri:
+  type: "preset"
+  preset_name: "studio_white"
+  strength: 1.0
+
+main_lights:
+  - name: "Key_Light"
+    type: "AREA"
+    position: [5, -5, 8]
+    energy: 5.0
+    color: [1.0, 1.0, 1.0]
+    size: 3.0
+    shape: "SQUARE"
+    shadow:
+      enabled: true
+      soft_size: 0.2
+
+additional_lights:
+  - name: "Fill_Light"
+    type: "AREA"
+    position: [-3, -3, 6]
+    energy: 2.0
+    color: [1.0, 1.0, 1.0]
+    size: 5.0
+    shape: "SQUARE"
+    shadow:
+      enabled: true
+      soft_size: 0.4
+
+  - name: "Rim_Light"
+    type: "AREA"
+    position: [0, 5, 4]
+    energy: 3.0
+    color: [1.0, 1.0, 1.0]
+    size: 2.0
+    shape: "SQUARE"
+    shadow:
+      enabled: false
+
+  - name: "Background_Light"
+    type: "AREA"
+    position: [0, 0, 2]
+    energy: 1.0
+    color: [0.9, 0.9, 1.0]
+    size: 8.0
+    shape: "SQUARE"
+    shadow:
+      enabled: false
+
+atmospheric:
+  # Мінімальні атмосферні ефекти для чистої студії
+  fog:
+    density: 0.01
+    anisotropy: 0.0
