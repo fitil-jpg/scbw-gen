@@ -1,12 +1,27 @@
-"""Blender scene generation for StarCraft assets."""
+"""Blender scene generation for StarCraft assets.
+
+This module is importable even when Blender's Python API isn't available.
+All Blender-dependent imports are optional so that CLI tools can run in
+"dry-run" mode outside Blender. Functions that rely on Blender will only
+work when executed inside Blender (with `bpy` available).
+"""
 
 from __future__ import annotations
 
-import bmesh
-import bpy
-import bpy_extras
-import mathutils
-from mathutils import Vector, Color
+# Optional Blender imports to allow importing this module without Blender
+try:  # pragma: no cover - environment-dependent
+    import bpy  # type: ignore
+    import bmesh  # type: ignore
+    import bpy_extras  # type: ignore
+    import mathutils  # type: ignore
+    from mathutils import Vector, Color  # type: ignore
+except Exception:  # pragma: no cover - when Blender isn't available
+    bpy = None  # type: ignore
+    bmesh = None  # type: ignore
+    bpy_extras = None  # type: ignore
+    mathutils = None  # type: ignore
+    Vector = None  # type: ignore
+    Color = None  # type: ignore
 from typing import List, Dict, Any, Tuple
 import logging
 
@@ -18,10 +33,13 @@ class StarCraftSceneGenerator:
     
     def __init__(self, config):
         self.config = config
-        self.scene = bpy.context.scene
+        # Access to bpy requires Blender. Delay attribute access until runtime.
+        self.scene = bpy.context.scene if bpy is not None else None  # type: ignore
         
     def clear_scene(self):
         """Clear all objects from the scene."""
+        if bpy is None:
+            raise RuntimeError("Blender API (bpy) is not available. This function must run inside Blender.")
         bpy.ops.object.select_all(action='SELECT')
         bpy.ops.object.delete(use_global=False)
         
@@ -31,6 +49,8 @@ class StarCraftSceneGenerator:
     
     def setup_scene(self, shot_config):
         """Set up the base scene for a shot."""
+        if bpy is None:
+            raise RuntimeError("Blender API (bpy) is not available. This function must run inside Blender.")
         self.clear_scene()
         
         # Set render settings
@@ -55,6 +75,8 @@ class StarCraftSceneGenerator:
     
     def _setup_camera(self):
         """Set up the camera for the shot."""
+        if bpy is None:
+            raise RuntimeError("Blender API (bpy) is not available. This function must run inside Blender.")
         # Create camera
         bpy.ops.object.camera_add(location=(0, -10, 5))
         camera = bpy.context.object
@@ -68,6 +90,8 @@ class StarCraftSceneGenerator:
     
     def _setup_lighting(self):
         """Set up basic lighting for the scene."""
+        if bpy is None:
+            raise RuntimeError("Blender API (bpy) is not available. This function must run inside Blender.")
         # Main light
         bpy.ops.object.light_add(type='SUN', location=(5, 5, 10))
         sun = bpy.context.object
@@ -83,6 +107,8 @@ class StarCraftSceneGenerator:
     
     def _generate_terrain(self, shot_config):
         """Generate terrain based on shot configuration."""
+        if bpy is None:
+            raise RuntimeError("Blender API (bpy) is not available. This function must run inside Blender.")
         # Create a simple plane for the battlefield
         bpy.ops.mesh.primitive_plane_add(size=20, location=(0, 0, 0))
         terrain = bpy.context.object
@@ -111,11 +137,14 @@ class StarCraftSceneGenerator:
         # Set terrain color based on palette
         palette_colors = shot_config.get_palette_colors()
         if palette_colors:
-            terrain_color = Color(palette_colors[0])
+            # Color requires Blender's mathutils; guaranteed present here
+            terrain_color = Color(palette_colors[0])  # type: ignore[arg-type]
             bsdf.inputs['Base Color'].default_value = (*terrain_color, 1.0)
     
     def _generate_units(self, shot_config):
         """Generate unit clusters based on shot configuration."""
+        if bpy is None:
+            raise RuntimeError("Blender API (bpy) is not available. This function must run inside Blender.")
         # Left cluster
         if shot_config.left_cluster:
             self._create_unit_cluster(
@@ -134,6 +163,8 @@ class StarCraftSceneGenerator:
     
     def _create_unit_cluster(self, cluster_config, palette_colors, side):
         """Create a cluster of units."""
+        if bpy is None:
+            raise RuntimeError("Blender API (bpy) is not available. This function must run inside Blender.")
         rect = cluster_config.get("rect", [0.1, 0.5])
         count = cluster_config.get("count", 5)
         size = cluster_config.get("size", [16, 32])
@@ -183,6 +214,8 @@ class StarCraftSceneGenerator:
     
     def _generate_ui(self, shot_config):
         """Generate UI elements (HUD) for the shot."""
+        if bpy is None:
+            raise RuntimeError("Blender API (bpy) is not available. This function must run inside Blender.")
         if not shot_config.hud:
             return
         
@@ -212,6 +245,8 @@ class StarCraftSceneGenerator:
     
     def create_portal_effect(self, shot_config):
         """Create portal/wormhole effect if specified."""
+        if bpy is None:
+            raise RuntimeError("Blender API (bpy) is not available. This function must run inside Blender.")
         if not shot_config.portal:
             return
         
