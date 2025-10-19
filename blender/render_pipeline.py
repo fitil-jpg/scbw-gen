@@ -34,6 +34,9 @@ class RGBAPass(RenderPass):
         scene.render.engine = 'CYCLES'
         scene.cycles.samples = 128
         
+        # Disable denoising to avoid OpenImageDenoise dependency issues
+        scene.cycles.use_denoising = False
+        
         # Ensure we're rendering RGBA
         scene.render.image_settings.file_format = 'PNG'
         scene.render.image_settings.color_mode = 'RGBA'
