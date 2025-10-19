@@ -5,8 +5,10 @@
 
 import bpy
 import bmesh
+import math
 import mathutils
 from mathutils import Vector, Matrix
+from asset_importer import AssetImporter
 from typing import Dict, Any, List, Optional, Tuple
 import logging
 
@@ -21,6 +23,7 @@ class EnhancedGeometryGenerator:
         self.created_objects = []
         self.material_cache = {}
         self.animation_cache = {}
+        self.asset_importer = AssetImporter()
     
     def clear_scene(self) -> None:
         """Очищає сцену від всіх об'єктів"""
@@ -45,30 +48,63 @@ class EnhancedGeometryGenerator:
             position = building_config.get("position", [0, 0, 0])
             scale = building_config.get("scale", [1, 1, 1])
             rotation = building_config.get("rotation", [0, 0, 0])
-            
-            # Створення базової геометрії
-            if building_type == "cube":
-                obj = self._create_cube_building(name, scale)
-            elif building_type == "cylinder":
-                obj = self._create_cylinder_building(name, scale)
-            elif building_type == "pyramid":
-                obj = self._create_pyramid_building(name, scale)
+            model_path = building_config.get("model_path")
+            use_instance = building_config.get("use_instance", True)
+            make_real = building_config.get("make_real", False)
+
+            # Якщо задано шлях до моделі – імпортуємо та створюємо інстанс
+            if isinstance(model_path, str) and len(model_path) > 0:
+                obj = self.asset_importer.import_model(
+                    model_path,
+                    link_as_instance=use_instance,
+                    make_real=make_real,
+                )
+                if obj is None:
+                    raise RuntimeError(f"Не вдалося імпортувати модель: {model_path}")
+                obj.name = name
             else:
-                obj = self._create_cube_building(name, scale)
-            
+                # Створення базової геометрії
+                if building_type == "cube":
+                    obj = self._create_cube_building(name, scale)
+                elif building_type == "cylinder":
+                    obj = self._create_cylinder_building(name, scale)
+                elif building_type == "pyramid":
+                    obj = self._create_pyramid_building(name, scale)
+                else:
+                    obj = self._create_cube_building(name, scale)
+
             # Позиціонування
             obj.location = Vector(position)
             obj.rotation_euler = [math.radians(r) for r in rotation]
-            
-            # Застосування матеріалів
-            if "materials" in building_config:
+            obj.scale = Vector(scale)
+
+            # Застосування матеріалів (лише для нативної геометрії або real-об'єктів)
+            if "materials" in building_config and (model_path is None or make_real):
                 self._apply_materials(obj, building_config["materials"])
-            
+
             # Додавання анімації
             if "animations" in building_config:
                 self._add_animations(obj, building_config["animations"])
-            
+
             self.created_objects.append(obj)
+
+            # Додаткові інстанси, якщо задано
+            instances_cfg = building_config.get("instances")
+            if isinstance(instances_cfg, list) and model_path:
+                for inst in instances_cfg:
+                    inst_pos = inst.get("position", position)
+                    inst_rot = inst.get("rotation", rotation)
+                    inst_scale = inst.get("scale", scale)
+                    inst_obj = self.asset_importer.import_model(
+                        model_path, link_as_instance=use_instance, make_real=make_real
+                    )
+                    if inst_obj is not None:
+                        inst_obj.name = f"{name}_inst"
+                        inst_obj.location = Vector(inst_pos)
+                        inst_obj.rotation_euler = [math.radians(r) for r in inst_rot]
+                        inst_obj.scale = Vector(inst_scale)
+                        self.created_objects.append(inst_obj)
+
             logger.info(f"Будівлю створено: {name}")
             return obj
             
@@ -116,30 +152,62 @@ class EnhancedGeometryGenerator:
             position = unit_config.get("position", [0, 0, 0])
             scale = unit_config.get("scale", [1, 1, 1])
             rotation = unit_config.get("rotation", [0, 0, 0])
-            
-            # Створення базової геометрії
-            if unit_type == "soldier":
-                obj = self._create_soldier_unit(name, scale)
-            elif unit_type == "vehicle":
-                obj = self._create_vehicle_unit(name, scale)
-            elif unit_type == "aircraft":
-                obj = self._create_aircraft_unit(name, scale)
+            model_path = unit_config.get("model_path")
+            use_instance = unit_config.get("use_instance", True)
+            make_real = unit_config.get("make_real", False)
+
+            if isinstance(model_path, str) and len(model_path) > 0:
+                obj = self.asset_importer.import_model(
+                    model_path,
+                    link_as_instance=use_instance,
+                    make_real=make_real,
+                )
+                if obj is None:
+                    raise RuntimeError(f"Не вдалося імпортувати модель: {model_path}")
+                obj.name = name
             else:
-                obj = self._create_soldier_unit(name, scale)
-            
+                # Створення базової геометрії
+                if unit_type == "soldier":
+                    obj = self._create_soldier_unit(name, scale)
+                elif unit_type == "vehicle":
+                    obj = self._create_vehicle_unit(name, scale)
+                elif unit_type == "aircraft":
+                    obj = self._create_aircraft_unit(name, scale)
+                else:
+                    obj = self._create_soldier_unit(name, scale)
+
             # Позиціонування
             obj.location = Vector(position)
             obj.rotation_euler = [math.radians(r) for r in rotation]
-            
-            # Застосування матеріалів
-            if "materials" in unit_config:
+            obj.scale = Vector(scale)
+
+            # Застосування матеріалів (для нативної геометрії або real-об'єктів)
+            if "materials" in unit_config and (model_path is None or make_real):
                 self._apply_materials(obj, unit_config["materials"])
-            
+
             # Додавання анімації
             if "animations" in unit_config:
                 self._add_animations(obj, unit_config["animations"])
-            
+
             self.created_objects.append(obj)
+
+            # Додаткові інстанси, якщо задано
+            instances_cfg = unit_config.get("instances")
+            if isinstance(instances_cfg, list) and model_path:
+                for inst in instances_cfg:
+                    inst_pos = inst.get("position", position)
+                    inst_rot = inst.get("rotation", rotation)
+                    inst_scale = inst.get("scale", scale)
+                    inst_obj = self.asset_importer.import_model(
+                        model_path, link_as_instance=use_instance, make_real=make_real
+                    )
+                    if inst_obj is not None:
+                        inst_obj.name = f"{name}_inst"
+                        inst_obj.location = Vector(inst_pos)
+                        inst_obj.rotation_euler = [math.radians(r) for r in inst_rot]
+                        inst_obj.scale = Vector(inst_scale)
+                        self.created_objects.append(inst_obj)
+
             logger.info(f"Юніт створено: {name}")
             return obj
             

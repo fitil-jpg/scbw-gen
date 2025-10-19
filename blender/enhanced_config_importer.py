@@ -26,11 +26,33 @@ class EnhancedConfigImporter:
         return {
             "buildings": {
                 "required_fields": ["name", "type", "position", "scale"],
-                "optional_fields": ["rotation", "materials", "animations", "collision"]
+                # Дозволяємо імпорт 3D-моделей та інстансинг
+                "optional_fields": [
+                    "rotation",
+                    "materials",
+                    "animations",
+                    "collision",
+                    "model_path",   # шлях до GLTF/GLB/FBX/OBJ
+                    "use_instance", # чи створювати інстанси (Collection Instance)
+                    "make_real",    # конвертувати інстанс у реальні об'єкти
+                    "instances"     # масив додаткових інстансів {position, rotation, scale}
+                ]
             },
             "units": {
                 "required_fields": ["name", "type", "position"],
-                "optional_fields": ["scale", "rotation", "materials", "animations", "health", "armor"]
+                # Дозволяємо імпорт 3D-моделей та інстансинг
+                "optional_fields": [
+                    "scale",
+                    "rotation",
+                    "materials",
+                    "animations",
+                    "health",
+                    "armor",
+                    "model_path",
+                    "use_instance",
+                    "make_real",
+                    "instances"
+                ]
             },
             "terrain": {
                 "required_fields": ["type", "heightmap"],
