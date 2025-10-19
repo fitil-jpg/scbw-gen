@@ -30,7 +30,11 @@ SCBW-Gen (StarCraft: Brood War Generator) is a collection of tools for building 
      Both utilities print the host that supplies the license so you can validate that your environment is pointed at the expected SideFX server or local installation.
    - (Optional) Set `HOUDINI_PATH` or project-specific environment variables if your studio pipeline requires them. See `houdini/README.md` (to be added) for detailed environment notes.
 3. **Install helper Python dependencies**
-   The Houdini automation scripts rely on [`pyyaml`](https://pyyaml.org/) to read `.yaml` pack descriptions. Create a virtual environment and install the bundled requirements before running the utilities:
+   The Houdini and Blender automation scripts rely on [`pyyaml`](https://pyyaml.org/) to read `.yaml` pack descriptions. 
+   
+   **For Blender users:** PyYAML is already installed and ready to use! See `README_YAML_BLENDER.md` for details.
+   
+   **For Houdini users:** Create a virtual environment and install the bundled requirements:
    ```bash
    python3 -m venv .venv
    source .venv/bin/activate  # Linux/macOS
@@ -42,6 +46,31 @@ SCBW-Gen (StarCraft: Brood War Generator) is a collection of tools for building 
    python -c "import yaml; print('pyyaml ready')"
    ```
    If `pyyaml` is unavailable, the tools automatically look for a JSON twin of the configuration (for example `params/pack.json`) so you can still run the helpers by pointing `--config` to that file or allowing the fallback to kick in.
+
+## Blender Automation Workflow
+
+The Blender pipeline provides an alternative to Houdini for teams preferring Blender. It includes full YAML configuration support and multi-pass EXR generation.
+
+**Quick Start:**
+```bash
+# Test YAML installation
+blender --background --python test_yaml_in_blender.py
+
+# Run example pipeline
+python3 blender/example_usage.py
+
+# Generate scene from YAML config
+python3 run_blender_pipeline.py --config params/pack.yaml
+```
+
+**Key Features:**
+- ✅ YAML configuration support (already installed!)
+- ✅ Multi-pass EXR rendering
+- ✅ Advanced geometry generation
+- ✅ Asset management system
+- ✅ Scene composition tools
+
+See `README_YAML_BLENDER.md` for detailed Blender setup and usage instructions.
 
 ## Houdini Automation Workflow
 
