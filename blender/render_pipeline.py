@@ -1,4 +1,9 @@
-"""Multi-pass rendering system for Blender SCBW pipeline."""
+"""Multi-pass rendering system for Blender SCBW pipeline.
+
+Supports rendering with both Cycles and Eevee engines. This module is
+typically executed inside Blender. When selecting Eevee, the pass classes
+adjust sampling parameters appropriately.
+"""
 
 from __future__ import annotations
 
@@ -14,9 +19,11 @@ LOG = logging.getLogger(__name__)
 class RenderPass:
     """Configuration for a single render pass."""
     
-    def __init__(self, name: str, output_path: Path, **kwargs):
+    def __init__(self, name: str, output_path: Path, render_engine: str = "CYCLES", **kwargs):
         self.name = name
         self.output_path = output_path
+        # Blender engine id: 'CYCLES' or 'BLENDER_EEVEE'
+        self.render_engine = render_engine
         self.settings = kwargs
     
     def setup_render_settings(self, scene):
@@ -30,9 +37,15 @@ class RGBAPass(RenderPass):
     
     def setup_render_settings(self, scene):
         """Set up for RGBA rendering."""
-        # Use default render settings
-        scene.render.engine = 'CYCLES'
-        scene.cycles.samples = 128
+        # Use configured render engine
+        scene.render.engine = self.render_engine
+        if self.render_engine == 'CYCLES':
+            scene.cycles.samples = 128
+        else:  # Eevee
+            scene.eevee.taa_render_samples = 32
+        
+        # Disable denoising to avoid OpenImageDenoise dependency issues
+        scene.cycles.use_denoising = False
         
         # Ensure we're rendering RGBA
         scene.render.image_settings.file_format = 'PNG'
@@ -43,8 +56,8 @@ class RGBAPass(RenderPass):
 class MaskPass(RenderPass):
     """Object selection mask pass."""
     
-    def __init__(self, name: str, output_path: Path, object_names: List[str]):
-        super().__init__(name, output_path)
+    def __init__(self, name: str, output_path: Path, object_names: List[str], render_engine: str = "CYCLES"):
+        super().__init__(name, output_path, render_engine)
         self.object_names = object_names
     
     def setup_render_settings(self, scene):
@@ -57,8 +70,11 @@ class MaskPass(RenderPass):
                 obj.hide_render = True
         
         # Set up for mask rendering
-        scene.render.engine = 'CYCLES'
-        scene.cycles.samples = 1  # Fast rendering for masks
+        scene.render.engine = self.render_engine
+        if self.render_engine == 'CYCLES':
+            scene.cycles.samples = 1  # Fast rendering for masks
+        else:
+            scene.eevee.taa_render_samples = 1
         
         # Use white material for mask objects
         mask_mat = bpy.data.materials.new(name="Mask_Material")
@@ -85,8 +101,11 @@ class DepthPass(RenderPass):
     
     def setup_render_settings(self, scene):
         """Set up for depth rendering."""
-        scene.render.engine = 'CYCLES'
-        scene.cycles.samples = 64
+        scene.render.engine = self.render_engine
+        if self.render_engine == 'CYCLES':
+            scene.cycles.samples = 64
+        else:
+            scene.eevee.taa_render_samples = 16
         
         # Enable depth pass
         scene.view_layers[0].use_pass_z = True
@@ -115,36 +134,49 @@ class DepthPass(RenderPass):
 class MultiPassRenderer:
     """Handles multi-pass rendering for SCBW assets."""
     
-    def __init__(self, output_directory: Path):
+    def __init__(self, output_directory: Path, engine: str = 'CYCLES'):
         self.output_directory = output_directory
         self.output_directory.mkdir(parents=True, exist_ok=True)
+        # Normalize engine name to Blender IDs
+        engine_norm = engine.upper()
+        if engine_norm in {"CYCLES", "BLENDER_EEVEE"}:
+            self.engine = engine_norm
+        elif engine_norm == "EEVEE":
+            self.engine = "BLENDER_EEVEE"
+        else:
+            self.engine = 'CYCLES'
         
         # Default passes
         self.default_passes = ['rgba', 'mask', 'depth']
     
-    def create_passes(self, shot_id: str, frame: int = 1) -> List[RenderPass]:
-        """Create render passes for a shot."""
-        passes = []
-        
-        # RGBA pass
-        rgba_path = self.output_directory / f"{shot_id}_rgba_{frame:04d}.png"
-        passes.append(RGBAPass("rgba", rgba_path))
-        
-        # Mask pass (all units)
-        mask_path = self.output_directory / f"{shot_id}_mask_{frame:04d}.png"
-        unit_objects = [obj.name for obj in bpy.context.scene.objects 
-                       if obj.name.startswith("SCBW_Unit_")]
-        passes.append(MaskPass("mask", mask_path, unit_objects))
-        
-        # Depth pass
-        depth_path = self.output_directory / f"{shot_id}_depth_{frame:04d}.exr"
-        passes.append(DepthPass("depth", depth_path))
-        
+    def create_passes(self, shot_id: str, frame: int = 1, pass_names: Optional[List[str]] = None) -> List[RenderPass]:
+        """Create render passes for a shot.
+
+        pass_names: Optional explicit list of pass identifiers among
+        ['rgba', 'mask', 'depth'].
+        """
+        selected = pass_names or self.default_passes
+        passes: List[RenderPass] = []
+
+        if 'rgba' in selected:
+            rgba_path = self.output_directory / f"{shot_id}_rgba_{frame:04d}.png"
+            passes.append(RGBAPass("rgba", rgba_path, render_engine=self.engine))
+
+        if 'mask' in selected:
+            mask_path = self.output_directory / f"{shot_id}_mask_{frame:04d}.png"
+            unit_objects = [obj.name for obj in bpy.context.scene.objects
+                            if obj.name.startswith("SCBW_Unit_")]
+            passes.append(MaskPass("mask", mask_path, unit_objects, render_engine=self.engine))
+
+        if 'depth' in selected:
+            depth_path = self.output_directory / f"{shot_id}_depth_{frame:04d}.exr"
+            passes.append(DepthPass("depth", depth_path, render_engine=self.engine))
+
         return passes
     
-    def render_passes(self, shot_id: str, frame: int = 1) -> Dict[str, Path]:
+    def render_passes(self, shot_id: str, frame: int = 1, pass_names: Optional[List[str]] = None) -> Dict[str, Path]:
         """Render all passes for a shot."""
-        passes = self.create_passes(shot_id, frame)
+        passes = self.create_passes(shot_id, frame, pass_names)
         rendered_paths = {}
         
         for pass_obj in passes:

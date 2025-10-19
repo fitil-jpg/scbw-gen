@@ -97,6 +97,12 @@ def _parse_arguments(argv: Optional[Sequence[str]] = None) -> argparse.Namespace
     )
     parser.add_argument("--dry-run", action="store_true", help="Skip Blender calls and just report actions")
     parser.add_argument("--verbose", action="store_true", help="Enable debug logging")
+    parser.add_argument(
+        "--engine",
+        choices=["cycles", "eevee"],
+        default="cycles",
+        help="Blender render engine to use (cycles or eevee)",
+    )
 
     args = parser.parse_args(argv)
 
@@ -133,6 +139,7 @@ def _render(
     frame_range: Sequence[int],
     blend_file: Optional[Path],
     dry_run: bool,
+    engine: str,
 ) -> int:
     selected_shots = filter_shots(config, shots)
     if not selected_shots:
@@ -156,7 +163,7 @@ def _render(
     with BlenderSession(blend_file):
         # Initialize components
         scene_generator = StarCraftSceneGenerator(config)
-        renderer = MultiPassRenderer(output)
+        renderer = MultiPassRenderer(output, engine=('BLENDER_EEVEE' if engine.lower() == 'eevee' else 'CYCLES'))
         packager = EXRPackager(output)
         
         for shot in selected_shots:
@@ -167,7 +174,7 @@ def _render(
             scene_generator.create_portal_effect(shot)
             
             # Render passes
-            pass_paths = renderer.render_passes(shot.id, frame_range[0])
+            pass_paths = renderer.render_passes(shot.id, frame_range[0], list(passes) if passes else None)
             
             # Package into EXR if requested
             packed_exr = None
@@ -224,6 +231,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             frame_range=args.frame_range,
             blend_file=args.blend_file,
             dry_run=args.dry_run,
+            engine=args.engine,
         )
     except BlenderNotAvailableError as exc:
         LOG.error("%s", exc)
