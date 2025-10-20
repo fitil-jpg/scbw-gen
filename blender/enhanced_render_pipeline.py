@@ -25,6 +25,163 @@ class EnhancedRenderPipeline:
             "BLENDER_EEVEE": self._setup_eevee
         }
     
+    # ============================
+    # Внутрішні утиліти керування
+    # ============================
+    def _configure_compute_device(self, scene: bpy.types.Scene, settings: Dict[str, Any]) -> None:
+        """Налаштування обчислювального пристрою (CPU/GPU) та бекенду (OPTIX/CUDA/HIP/METAL/ONEAPI).
+
+        Очікувані ключі у settings:
+        - device: "CPU" | "GPU" | "AUTO" (default: AUTO)
+        - device_backend: "OPTIX" | "CUDA" | "HIP" | "METAL" | "ONEAPI" (optional)
+        - enabled_devices: Optional[List[str]] (імена GPU, які треба ввімкнути)
+        """
+        device_mode = (settings.get("device", "AUTO") or "AUTO").upper()
+        requested_backend = settings.get("device_backend")
+        enabled_devices = settings.get("enabled_devices") or []
+
+        try:
+            # Якщо явно CPU, встановлюємо CPU і виходимо
+            if device_mode == "CPU":
+                scene.cycles.device = "CPU"
+                # Для деяких версій Cycles потрібно вимкнути GPU бекенд
+                prefs = bpy.context.preferences
+                if "cycles" in prefs.addons:
+                    cprefs = prefs.addons["cycles"].preferences
+                    # NONE/CPU вимикає GPU бекенд у різних версіях Blender
+                    if hasattr(cprefs, "compute_device_type"):
+                        try:
+                            cprefs.compute_device_type = "NONE"
+                        except Exception:
+                            pass
+                return
+
+            # В іншому випадку намагаємось налаштувати GPU
+            scene.cycles.device = "GPU"
+
+            prefs = bpy.context.preferences
+            if "cycles" not in prefs.addons:
+                # Якщо аддон недоступний (малоймовірно), відкат на CPU
+                scene.cycles.device = "CPU"
+                return
+
+            cprefs = prefs.addons["cycles"].preferences
+
+            # Послідовність пріоритетів бекендів, якщо не задано явно
+            backend_priority: List[str] = [
+                "OPTIX", "CUDA", "HIP", "METAL", "ONEAPI"
+            ]
+            if requested_backend:
+                backend_priority = [requested_backend.upper()] + [b for b in backend_priority if b != requested_backend.upper()]
+
+            # Спроба активувати перший доступний бекенд
+            selected_backend: Optional[str] = None
+            for backend in backend_priority:
+                try:
+                    if hasattr(cprefs, "compute_device_type"):
+                        cprefs.compute_device_type = backend
+                    # Оновити список пристроїв
+                    if hasattr(cprefs, "get_devices"):
+                        try:
+                            cprefs.get_devices()
+                        except Exception:
+                            pass
+
+                    devices_attr = getattr(cprefs, "devices", None)
+                    if not devices_attr:
+                        continue
+
+                    # cprefs.devices може бути плоским списком або списком списків
+                    def iter_devices(devs):
+                        for d in devs:
+                            if isinstance(d, (list, tuple)):
+                                for sd in d:
+                                    yield sd
+                            else:
+                                yield d
+
+                    found_any = False
+                    for d in iter_devices(devices_attr):
+                        # d має поля: name, type, use
+                        is_gpu = getattr(d, "type", "").upper() != "CPU"
+                        if is_gpu and (not enabled_devices or getattr(d, "name", "") in enabled_devices):
+                            if hasattr(d, "use"):
+                                d.use = True
+                            found_any = True
+                        else:
+                            if hasattr(d, "use"):
+                                d.use = False
+
+                    if found_any:
+                        selected_backend = backend
+                        break
+                except Exception:
+                    # Пробуємо наступний бекенд
+                    continue
+
+            if not selected_backend:
+                # Відкат до CPU, якщо GPU недоступний
+                scene.cycles.device = "CPU"
+        except Exception as e:
+            logger.warning(f"Не вдалося налаштувати GPU, використовую CPU: {e}")
+            try:
+                scene.cycles.device = "CPU"
+            except Exception:
+                pass
+
+    def _apply_simplify_settings(self, scene: bpy.types.Scene, settings: Dict[str, Any]) -> None:
+        """Застосовує налаштування спрощення сцени (LOD через Simplify)."""
+        simplify = settings.get("simplify") or {}
+        use_simplify = simplify.get("use_simplify", False) or settings.get("use_simplify", False)
+        if not use_simplify:
+            return
+
+        try:
+            scene.render.use_simplify = True
+            # Параметри можуть відрізнятись між версіями Blender – перевіряємо наявність
+            mapping: Dict[str, Any] = {
+                "simplify_subdivision": simplify.get("subdivision", 1.0),
+                "simplify_subdivision_render": simplify.get("subdivision_render", 1.0),
+                "simplify_child_particles": simplify.get("child_particles", 1.0),
+                "simplify_gpencil": simplify.get("gpencil", 1.0),
+                "simplify_texture_limit": simplify.get("texture_limit", 0),  # 0 = без ліміту
+                "simplify_volumes": simplify.get("volumes", 1.0),
+            }
+            for attr, value in mapping.items():
+                if hasattr(scene.render, attr):
+                    setattr(scene.render, attr, value)
+        except Exception as e:
+            logger.warning(f"Не вдалося застосувати Simplify налаштування: {e}")
+
+    def _apply_tile_settings(self, scene: bpy.types.Scene, cycles: bpy.types.Cycles, settings: Dict[str, Any]) -> None:
+        """Застосовує налаштування тайлів для рендеру, якщо доступно в поточній версії Blender."""
+        tile_size = settings.get("tile_size")
+        tile_x = settings.get("tile_x")
+        tile_y = settings.get("tile_y")
+        if tile_size is None and tile_x is None and tile_y is None:
+            return
+
+        try:
+            # Cycles X (Blender 3.x+) може ігнорувати тайли; намагаємось коректно поставити якщо атрибути існують
+            if hasattr(cycles, "tile_size") and isinstance(tile_size, int):
+                try:
+                    cycles.tile_size = tile_size
+                    return
+                except Exception:
+                    pass
+            # Старіші API
+            if hasattr(scene.render, "tile_x") and hasattr(scene.render, "tile_y"):
+                if isinstance(tile_size, int):
+                    scene.render.tile_x = tile_size
+                    scene.render.tile_y = tile_size
+                else:
+                    if isinstance(tile_x, int):
+                        scene.render.tile_x = tile_x
+                    if isinstance(tile_y, int):
+                        scene.render.tile_y = tile_y
+        except Exception as e:
+            logger.warning(f"Неможливо застосувати тайли: {e}")
+    
     def setup_render_engine(self, engine: str, settings: Dict[str, Any]) -> None:
         """
         Налаштовує рендер двигун
@@ -52,31 +209,102 @@ class EnhancedRenderPipeline:
         """Налаштовує Cycles рендер двигун"""
         cycles = scene.cycles
         
+        # Пристрій обчислень та бекенд
+        self._configure_compute_device(scene, settings)
+
         # Основні налаштування
-        cycles.samples = settings.get("samples", 128)
-        cycles.use_denoising = settings.get("denoising", True)
-        cycles.denoiser = settings.get("denoiser", "OPTIX")
+        cycles.samples = int(settings.get("samples", 128))
+
+        # Адаптивне семплювання
+        if settings.get("use_adaptive_sampling", settings.get("adaptive_sampling", False)):
+            try:
+                cycles.use_adaptive_sampling = True
+                if "adaptive_threshold" in settings:
+                    cycles.adaptive_threshold = float(settings.get("adaptive_threshold", 0.01))
+                if "adaptive_min_samples" in settings:
+                    cycles.adaptive_min_samples = int(settings.get("adaptive_min_samples", 0))
+            except Exception as e:
+                logger.warning(f"Адаптивне семплювання недоступне: {e}")
+
+        # Денойзинг (ререндер/фінальний)
+        denoise_enabled = settings.get("denoising", settings.get("denoise", True))
+        denoiser_name = (settings.get("denoiser", "OPTIX") or "OPTIX").upper()
+        try:
+            # Налаштування денойзера Cycles
+            if hasattr(cycles, "denoiser"):
+                # 'OPTIX' | 'OPENIMAGEDENOISE' | 'NLM'
+                valid_map = {
+                    "OPTIX": "OPTIX",
+                    "OIDN": "OPENIMAGEDENOISE",
+                    "OPENIMAGEDENOISE": "OPENIMAGEDENOISE",
+                    "NLM": "NLM",
+                }
+                cycles.denoiser = valid_map.get(denoiser_name, cycles.denoiser)
+            # Вмикаємо денойзинг на рівні View Layer, якщо атрибут існує
+            if hasattr(bpy.context.view_layer, "cycles") and hasattr(bpy.context.view_layer.cycles, "use_denoising"):
+                bpy.context.view_layer.cycles.use_denoising = bool(denoise_enabled)
+            elif hasattr(cycles, "use_denoising"):
+                cycles.use_denoising = bool(denoise_enabled)
+            # Вхідні паси для кращого денойзингу (OIDN)
+            if hasattr(cycles, "denoising_input_passes"):
+                cycles.denoising_input_passes = settings.get("denoising_input_passes", "RGB_ALBEDO_NORMAL")
+
+            # Опційний нод-композитор для денойзингу, якщо попросили
+            if settings.get("use_compositor_denoise_node", False) and bpy.context.scene.use_nodes:
+                tree = bpy.context.scene.node_tree
+                try:
+                    # Мінімально інвазивно додаємо нод денойзингу, якщо його ще нема
+                    has_denoise_node = any(n.type == 'DENOISE' for n in tree.nodes)
+                    if not has_denoise_node:
+                        denoise_node = tree.nodes.new('CompositorNodeDenoise')
+                        denoise_node.location = (200, 0)
+                        # Підключення: якщо є Composite або File Output, намагаємося вставити між Render Layers та виходом
+                        render_layers = next((n for n in tree.nodes if n.type == 'R_LAYERS'), None)
+                        composite = next((n for n in tree.nodes if n.type == 'COMPOSITE'), None)
+                        file_out = next((n for n in tree.nodes if n.type == 'OUTPUT_FILE'), None)
+                        if render_layers and (composite or file_out):
+                            try:
+                                # Класичне підключення до Composite
+                                if composite:
+                                    tree.links.new(render_layers.outputs.get('Image'), denoise_node.inputs.get('Image'))
+                                    # Альбедо/Нормалі якщо доступні
+                                    if 'Denoising Albedo' in render_layers.outputs and 'Albedo' in denoise_node.inputs:
+                                        tree.links.new(render_layers.outputs['Denoising Albedo'], denoise_node.inputs['Albedo'])
+                                    if 'Denoising Normal' in render_layers.outputs and 'Normal' in denoise_node.inputs:
+                                        tree.links.new(render_layers.outputs['Denoising Normal'], denoise_node.inputs['Normal'])
+                                    tree.links.new(denoise_node.outputs.get('Image'), composite.inputs.get('Image'))
+                                elif file_out:
+                                    tree.links.new(render_layers.outputs.get('Image'), denoise_node.inputs.get('Image'))
+                                    tree.links.new(denoise_node.outputs.get('Image'), file_out.inputs.get('Image'))
+                            except Exception:
+                                pass
+                except Exception:
+                    pass
+        except Exception as e:
+            logger.warning(f"Не вдалося налаштувати денойзинг: {e}")
         
         # Налаштування якості
-        cycles.max_bounces = settings.get("max_bounces", 12)
-        cycles.diffuse_bounces = settings.get("diffuse_bounces", 4)
-        cycles.glossy_bounces = settings.get("glossy_bounces", 4)
-        cycles.transmission_bounces = settings.get("transmission_bounces", 12)
-        cycles.volume_bounces = settings.get("volume_bounces", 0)
+        cycles.max_bounces = int(settings.get("max_bounces", 12))
+        cycles.diffuse_bounces = int(settings.get("diffuse_bounces", 4))
+        cycles.glossy_bounces = int(settings.get("glossy_bounces", 4))
+        cycles.transmission_bounces = int(settings.get("transmission_bounces", 12))
+        cycles.volume_bounces = int(settings.get("volume_bounces", 0))
         
         # Налаштування освітлення
         cycles.caustics_reflective = settings.get("caustics_reflective", True)
         cycles.caustics_refractive = settings.get("caustics_refractive", True)
         
-        # Налаштування пам'яті
-        cycles.device = settings.get("device", "CPU")
-        cycles.tile_size = settings.get("tile_size", 256)
+        # Тайли (якщо підтримується) та пам'ять
+        self._apply_tile_settings(scene, cycles, settings)
         
         # Налаштування кольору
         scene.view_settings.view_transform = settings.get("view_transform", "Filmic")
         scene.view_settings.look = settings.get("look", "None")
         scene.view_settings.exposure = settings.get("exposure", 0.0)
         scene.view_settings.gamma = settings.get("gamma", 1.0)
+
+        # Simplify/LOD
+        self._apply_simplify_settings(scene, settings)
     
     def _setup_eevee(self, scene: bpy.types.Scene, settings: Dict[str, Any]) -> None:
         """Налаштовує Eevee рендер двигун"""
@@ -113,6 +341,9 @@ class EnhancedRenderPipeline:
         scene.view_settings.look = settings.get("look", "None")
         scene.view_settings.exposure = settings.get("exposure", 0.0)
         scene.view_settings.gamma = settings.get("gamma", 1.0)
+        
+        # Simplify/LOD для Eevee також може зменшити геометрію
+        self._apply_simplify_settings(scene, settings)
     
     def setup_render_settings(self, settings: Dict[str, Any]) -> None:
         """Налаштовує загальні налаштування рендерингу"""
